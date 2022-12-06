@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adnstyle.myboard.model.repository.JyBoardRepository">
+
+    <!--    게시글리스트검색-->
+    <sql id="searchContents">
+        <if test='boardType.equals("Free_Board")'>
+            <choose>
+                <when test='type.equals("A")'>
+                    <if test='search==""'>
+                        WHERE 1=1
+                    </if>
+                    <if test='search!=""'>
+                        WHERE (title LIKE CONCAT('%',#{search},'%')
+                        OR
+                        created_by LIKE CONCAT('%',#{search},'%')
+                        OR
+                        content LIKE CONCAT('%',#{search},'%')
+                        )
+                    </if>
+                </when>
+                <when test='type.equals("T")'>
+                        WHERE title LIKE CONCAT('%',#{search},'%')
+                </when>
+                <when test='type.equals("W")'>
+                        WHERE created_by LIKE CONCAT('%',#{search},'%')
+                </when>
+                <when test='type.equals("C")'>
+                        WHERE content LIKE CONCAT('%',#{search},'%')
+                </when>
+                <when test='type.equals("TC")'>
+                        WHERE title LIKE CONCAT('%',#{search},'%') OR content LIKE CONCAT('%',#{search},'%')
+                </when>
+
+            </choose>
+            AND board_type = "Free_Board"
+        </if>
+        <if test='boardType.equals("QnA_Board")'>
+            WHERE 1 = 1
+            AND board_type=#{boardType}
+        </if>
+    </sql>
+
+
+    <!--  게시물 총 갯수  -->
+    <select id="countAll" resultType="int" parameterType="map">
+        SELECT count(*)
+        FROM jy_board
+        <include refid="searchContents"></include>
+    </select>
+
+    <!-- 고객들이 볼 게시판 리스트 화면  -->
+    <select id="myBoardPage" parameterType="map" resultType="jyBoard">
+        SELECT id,
+               title,
+               view_count,
+               modified_date,
+               modified_by
+        FROM   jy_board
+        WHERE  del_yn = 'N'
+        ORDER BY id desc
+        LIMIT #{offset} , #{pageSize}
+    </select>
+
+    <!--  관리자가 볼 게시판 리스트 화면   -->
+    <select id="selectList" parameterType="map" resultType="jyBoard">
+        SELECT id,
+               title,
+               view_count,
+               modified_date,
+               modified_by,
+               del_yn,
+               group_bno,
+               board_type
+        FROM jy_board
+        <include refid="searchContents"></include>
+        ORDER BY group_bno DESC , id ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!--    게시글 상세조회    -->
+    <select id="selectContent" parameterType="long" resultType="jyBoard">
+        SELECT title,
+               modified_by,
+               content,
+               modified_date,
+               id,
+               group_bno,
+               board_type
+        FROM jy_board
+        WHERE id = #{id}
+    </select>
+
+    <!--    게시글 클릭시 조회수 증가  -->
+    <update id="updateCount" parameterType="long">
+        UPDATE jy_board
+        SET    view_count = view_count + 1
+        WHERE  id = #{id}
+    </update>
+
+    <!--    게시글 삭제처리(상태값변경)    -->
+    <update id="deleteContent" parameterType="long">
+        UPDATE jy_board set del_yn = 'Y'
+        WHERE
+        <choose>
+            <when test="group_bno==id"><!--게시글+답글삭제-->
+                group_bno=#{id}
+            </when>
+        </choose>
+    </update>
+
+    <select id="selectId" resultType="long">
+        SELECT ID
+        FROM jy_board
+        ORDER BY ID DESC limit 1;
+    </select>
+
+    <!--    게시글등록   -->
+    <insert id="insertContent" parameterType="jyBoard">
+        INSERT INTO jy_board
+            (title, content, view_count, created_by, modified_by,
+             created_date, modified_date, board_type)
+        VALUES
+            (#{title}, #{content}, 0, #{createdBy}, #{createdBy}, NOW(), NOW(), #{boardType})
+    </insert>
+
+    <update id="updateContent" parameterType="jyBoard">
+        UPDATE jy_board
+        SET    title = #{title},
+               content = #{content},
+               modified_by = #{modifiedBy},
+               modified_date = NOW()
+        WHERE  id = #{id}
+    </update>
+
+    <!--    게시글 등록시 게시글번호를 그룹번호로 수정   -->
+    <update id="updateGroupBno" parameterType="long">
+        UPDATE jy_board
+        SET    group_bno=#{id}
+        WHERE  id = #{id}
+    </update>
+
+    <!--    답글등록    -->
+    <insert id="insertAnswer" parameterType="jyBoard">
+        INSERT INTO jy_board
+            (title, content, view_count, created_by, modified_by, created_date,
+             modified_date, group_bno, board_type)
+        VALUES
+            (#{title}, #{content}, 0, #{createdBy}, #{createdBy},
+             NOW(), NOW(), #{groupBno}, #{boardType})
+    </insert>
+
+    <!--    답글삭제    -->
+    <update id="deleteAnswer" parameterType="long">
+        UPDATE jy_board
+        SET    del_yn = 'Y'
+        WHERE  id = #{id}
+    </update>
+
+</mapper>

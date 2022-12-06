@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <meta charset="utf-8">
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>자유게시판</title>
+  <style>
+    form {
+      text-align: center;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .btn-group {
+      float: right;
+    }
+
+    #upd_btn, #del_btn, #upd_sub {
+      background-color: #66b2ff;
+      margin-bottom: 10px;
+    }
+
+    #main_btn {
+      background-color: #ffffff;
+      color: #000000;
+      margin-bottom: 10px;
+    }
+
+    label {
+      float: left;
+    }
+
+    .form-control {
+      margin-bottom: 20px;
+    }
+
+    #main {
+      margin-top: 50px;
+    }
+
+    #mainTitle {
+      text-align: center;
+    }
+
+    #answer_btn {
+      float: right;
+    }
+
+    #btnBox {
+      display: flex;
+    }
+
+    #replyBox {
+      display: inline;
+      border-radius: 10px;
+    }
+
+    #replySub {
+      width: 100px;
+    }
+
+    #childReplyContent {
+      width: 400px;
+    }
+
+    .delReplyTr {
+      text-align: center;
+    }
+
+  </style>
+</head>
+<th:block layout:fragment="content">
+
+  <body>
+  <script src="/js/jquery-3.6.1.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <div>
+    <div class="container">
+
+      <h1 id="mainTitle">게시글읽기</h1>
+      <div id="main">
+        <form action="/user/updateContent" method="post" id="contentForm" enctype="multipart/form-data"
+              th:each="myContent : ${myContent}">
+          <label for="titleBox" class="form-label fs-5 fw-bold">제목</label>
+          <input type="text" id="titleBox" class="form-control" name="title" th:value="${myContent.title}"
+                 readonly="readonly">
+          <label for="writerBox" class="form-label fs-5 fw-bold">작성자</label>
+          <input type="text" id="writerBox" class="form-control" name="modifiedBy"
+                 th:value="${myContent.modifiedBy}" readonly="readonly">
+          <label for="contentBox" class="form-label fs-5 fw-bold">내용</label>
+          <textarea rows="20" name="content" id="contentBox" th:text="${myContent.content}"
+                    class="form-control" readonly="readonly"/>
+          <input type="file" id="onlyAttach" class="form-control" style="display: none" name="uploadFile"
+                 multiple>
+
+          <input type="hidden" name="id" th:value="${myContent.id}">
+          <input type="hidden" name="boardType" th:value="${myContent.boardType}">
+          <input type="hidden" name="page" th:value="${page}">
+          <input type="hidden" name="search" th:value="${search}">
+          <input type="hidden" name="type" th:value="${type}">
+
+          <div>
+            <div id="attachUl" th:if="${!attachList.isEmpty()}">
+              <ul th:each="attachList : ${attachList}" class="checkboxList" style="list-style: none">
+                <li id="attList" th:value="${attachList.attBno}">
+                  <a th:href="@{/user/downloadFile(fileName = ${attachList.uuid}, uploadPath = ${attachList.uploadPath})}">
+                    <span th:text="${attachList.originName}"/></a>
+                  <button type="button" th:value="${attachList.attBno}" class="attBno"
+                          th:attr="data-att=${attachList.attBno}" id="attBno" style="display: none">삭제
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="btn-group" role="group" aria-label="Basic example">
+
+            <th:block th:if="${session.jyUserSession.userId == myContent.modifiedBy}">
+              <button type="button" class="btn btn-primary" id="upd_btn" style="display: inline">수정하기
+              </button>
+              <button type="submit" class="btn btn-primary" id="upd_sub" style="display: none">수정완료
+              </button>
+            </th:block>
+            <button type="button" id="main_btn" class="btn btn-primary"
+                    th:onclick="|location.href='@{/user/boardList(page=${page},type=${type},search=${search},boardType=${myContent.boardType})}'|">
+              목록
+            </button>
+
+
+            <th:block th:if="${session.jyUserSession.userId == myContent.modifiedBy}">
+              <button type="button" id="del_btn" class="btn btn-primary"
+                      th:onclick="|location.href='@{/user/deleteContent(id=${myContent.id},boardType=${myContent.boardType})}'|">
+                삭제
+              </button>
+
+            </th:block>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <label>댓글작성</label>
+        <div id="replyBox">
+          <form id="reply_box" method="post" action="/user/insertReply">
+            <!--댓글내용-->
+            <input type="text" name="reContent" id="reContent" class="form-control">
+            <!--댓글작성자-->
+            <input type="hidden" name="reCreatedBy" id="reCreatedBy"
+                   th:value="${session.jyUserSession.userId}" readonly="readonly">
+            <!--원글게시글 번호-->
+            <th:block th:each="myContent : ${myContent}">
+              <input type="hidden" name="boardBno" id="boardBno" th:value="${myContent.id}">
+            </th:block>
+            <input type="button" class="btn btn-outline-info" id="replySub" value="댓글작성"/>
+
+
+          </form>
+        </div>
+        <label>댓글목록</label>
+        <div id="replyList">
+          <!--댓글 목록 뜰곳-->
+        </div>
+
+        <div id="replyPaging">
+          <!--페이징바 뜰곳-->
+        </div>
+      </div>
+
+      <div id="chileReplyBox">
+        <!--대댓글달기 버튼 클릭시 나올 Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">대댓글 작성</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="childReH()"
+                        aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                                    <textarea name="reContent" id="childReplyContent" placeholder="대댓글을 작성해주세요"
+                                              rows="10"></textarea>
+
+                <input type="hidden" name="reCreatedBy" id="childReplyCreateBy"
+                       th:value="${session.jyUserSession.userId}">
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" id="childReSub" class="childReSub btn btn-primary"
+                        data-bs-dismiss="modal">등록
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        onclick="childReH()">닫기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--모달끝-->
+    </div>
+  </div>
+  </div>
+
+  <script>
+    //접속되자마자 댓글조회 함수 실행
+    $(document).ready(function () {
+      selectReplyList();
+    });
+
+    //대댓글등록
+    $(document).on("click", ".childReV", function () {//동적으로 생성된 버튼에 이벤트를 적용하려면 이 방식으로! 대댓글달기버튼 클릭시
+
+      $("#chileReplyBox").css('display', 'inline');
+
+      let reBno = $(this).data('rebno');
+      let reOrder = $(this).data('reorder');
+      let reDepth = $(this).data('redepth');
+      let reGroupBno = $(this).data('regroupbno');
+      let boardBno = $(this).data('boardbno');
+
+      //대댓글모달에서 등록 버튼 눌렀을때
+      $(document).off('click', ".childReSub").on("click", ".childReSub", function () {
+        let reContent = $("#childReplyContent").val();
+        let reCreatedBy = $("#childReplyCreateBy").val();
+        console.log("하위댓글" + reContent);
+        console.log("작성자" + reCreatedBy);
+
+        if (reContent.length > 0) {
+
+          let childReply = {
+            "reBno"      : reBno,
+            "reContent"  : reContent,
+            "reOrder"    : reOrder,
+            "reDepth"    : reDepth,
+            "reCreatedBy": reCreatedBy,
+            "reGroupBno" : reGroupBno,
+            "boardBno"   : boardBno
+          }
+
+          $.ajax({
+            url : "/user/insertChildReply",
+            type: 'POST',
+            //dataType   : 'JSON',
+            contentType: "application/json; charset=utf-8",
+            data       : JSON.stringify(childReply),
+            success    : function (data) {
+              if (data.result == "success") {
+                alert("댓글이 등록되었습니다.");
+                childReH();
+                selectReplyList();
+              } else {
+                alert("댓글등록 실패")
+              }
+            },
+
+            error: function () {
+              alert("에러발생")
+            }
+
+          })
+        } else {
+          alert("내용을 입력해주세요")
+        }
+
+      });
+    });
+
+    function childReH() {//댓글작성박스 안보이게
+      $("#childReplyContent").val('');
+    }
+
+
+    // 댓글 삭제
+    $(document).on("click", "#reply_del_btn", function (e) {//동적으로 생성된 버튼에 이벤트를 적용하려면 이 방식으로
+      console.log("삭제버튼누름");
+      console.log(e.target.value);
+
+      let delReBno = e.target.value;
+
+      console.log("delReBno" + delReBno);
+
+      $.ajax({
+        url    : '/user/deleteReply',
+        type   : 'POST',
+        data   : {delReBno: delReBno},
+        success: function (data) {
+          if (data.result == 'success') {
+            alert("댓글이 삭제되었습니다.");
+            selectReplyList();
+          }
+        },
+        error  : function () {
+          alert("에러발생")
+        }
+      })
+    });
+
+    //댓글 작성
+    let replySub = document.getElementById("replySub");//댓글작성버튼 클릭시 실행
+
+    replySub.addEventListener('click', function () {
+      console.log("버튼누름");
+      let reContent = $("#reContent").val();
+      let reCreatedBy = $("#reCreatedBy").val();
+      let boardBno = $("#boardBno").val();
+
+      let jyReply = {
+        reContent  : reContent,
+        reCreatedBy: reCreatedBy,
+        boardBno   : boardBno
+      }
+
+      $.ajax({
+        url        : "/user/insertReply",
+        type       : 'POST',
+        dataType   : 'JSON',
+        contentType: "application/json; charset=utf-8",
+        data       : JSON.stringify(jyReply),
+        success    : function (data) {
+          if (data.result == 'success') {
+            alert("댓글이 등록되었습니다.");
+            $("#reContent").val('');
+            selectReplyList();
+          }
+        },
+        error      : function () {
+          alert("에러발생")
+        }
+      });
+    });
+
+    // 댓글조회 함수 페이징
+    function selectReplyList(page) {
+      let boardBno = $("#boardBno").val();
+      $.ajax({
+        url        : "/user/selectReplyList",
+        type       : 'GET',
+        dataType   : 'JSON',
+        contentType: "application/json; charset=utf-8",
+        data       : {
+          "boardBno": boardBno,
+          "page"    : page
+        },
+        success    : function (data) {
+          if (data) {
+            console.log(data);
+            let replyList = data.replyList;//댓글목록 출력용
+            let ph = data.ph;//페이징용
+            console.log(replyList);
+            console.log(ph);
+
+            console.log("ph.endPage" + ph.endPage);
+            console.log("ph.showPrev" + ph.showPrev);
+
+            $("#replyList").html('');//기존목록 가리기
+
+            let newReplyList = "<table class= ' table ' style='table-layout: fixed'>"
+            newReplyList += "<tr>";
+            newReplyList += "<th style = 'width: 20%'>작성자</th>";
+            newReplyList += "<th style = 'width: 40%'>댓글</th>";
+            newReplyList += "<th style = 'width: 20%'>작성일</th>";
+            newReplyList += "<th style = 'width: 20%'></th>";
+            newReplyList += "</tr>";
+
+            $.each(replyList, function (index, reply) {
+              console.log("reBno" + reply.reBno);
+              console.log("reContent" + reply.reContent);
+              console.log("reCreatedBy" + reply.reCreatedBy);
+              console.log("reCreatedDate" + reply.reCreatedDate);
+
+
+              newReplyList += "<tr>";
+              if (reply.reDelYn == 'Y') {
+                newReplyList += "<td colspan='4' class='delReplyTr'>" + "<b>삭제된 댓글입니다.</b>" + "</td>";
+              } else {
+                newReplyList += "<td>" + reply.reCreatedBy + "</td>";
+                if (reply.reDepth == 0) {
+                  newReplyList += "<td>" + reply.reContent + "</td>";
+                }
+                if (reply.reDepth == 1) {
+                  newReplyList += "<td>" + "&nbsp&nbspL" + reply.reContent + "</td>";
+                }
+                if (reply.reDepth == 2) {
+                  newReplyList += "<td>" + "&nbsp&nbsp&nbsp&nbspL" + reply.reContent + "</td>";
+                }
+                if (reply.reDepth == 3) {
+                  newReplyList += "<td>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbspL" + reply.reContent + "</td>";
+                }
+                if (reply.reDepth > 3) {
+                  newReplyList += "<td>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspL" + reply.reContent + "</td>";
+                }
+                newReplyList += "<td>" + reply.reCreatedDate + "</td>";
+
+                newReplyList += "<td><div>";
+                if (JyUserSession.userId == reply.reCreatedBy) {
+                  newReplyList += "<input type='hidden' value=" + reply.reBno + " id='reBno' class='reBno'>";
+                  newReplyList += "<button type='button'";
+                  newReplyList += "class='reply_del_btn btn btn-primary' id='reply_del_btn'";
+                  newReplyList += "value=" + reply.reBno + ">";
+                  newReplyList += "삭제</button>";
+                }
+                newReplyList += "<button type='button' id='childReV' class='btn btn-primary childReV' data-bs-toggle='modal'";
+                newReplyList += "data-bs-target='#staticBackdrop'";
+                newReplyList += "data-rebno=" + reply.reBno + " data-reorder=" + reply.reOrder + " data-redepth=" + reply.reDepth + " data-regroupbno= " + reply.reGroupBno + " data-boardbno= " + reply.boardBno;//" data-recreatedby=" + reply.reCreatedBy +
+                newReplyList += ">대댓글달기</button>"
+
+                newReplyList += "</div></td>";
+              }
+              newReplyList += "</tr>";
+            })
+            newReplyList += "</table>";
+
+            $("#replyList").html(newReplyList);
+
+            //페이징화면 뜰곳
+
+            let replyPaging = "<ul class='pagination' style='justify-content: center'>";
+
+            if (ph.showPrev) {
+              replyPaging += "<li class='page-item'>";
+              replyPaging += "<button class='page-link' onclick='selectReplyList(" + (ph.beginPage - 1) + ")'> < </button></li>";
+
+            }
+
+            for (var i = ph.beginPage; i <= ph.endPage; i++) {
+
+              if (i == ph.page) {
+                replyPaging += "<li class='page-item active'>";
+              } else {
+                replyPaging += "<li class='page-item'>";
+              }
+              replyPaging += "<button class='page-link' onclick='selectReplyList(" + i + ")'>" + i + "</button>";
+              replyPaging += "</li>";
+            }
+            if (ph.showNext) {
+              replyPaging += "<li class='page-item'>";
+              replyPaging += "<button class='page-link' onclick='selectReplyList(" + (ph.endPage + 1) + ")'> > </button></li>";
+            }
+
+            replyPaging += "</ul>";
+            $("#replyPaging").html(replyPaging);
+            //    페이징끝
+
+          } else {
+            alert("댓글조회 실패")
+          }
+        },
+        error      : function () {
+
+        }
+      })
+    }
+
+    /*첨부파일 옆 삭제버튼 누르면 화면에서 첨부파일 리스트 가리기*/
+    $(document).on("click", "#attBno", function (e) {//동적으로 생성된 버튼에 이벤트를 적용하려면 이 방식으로
+      let attList = e.target.closest('li');//closest 상위 태그 접근
+      let attDelBno = e.target.value;
+
+      let str = "";
+      str += '<input type="hidden" name="attBno" value=' + attDelBno + '>';
+      $('#contentForm').append(str);
+
+      attList.style.display = "none";
+    });
+
+    $("#upd_btn").click(function () {
+      upd_btnE();
+    });
+
+    function upd_btnE() {
+      let formU = document.getElementsByClassName("form-control");
+
+      for (let i = 0; i < formU.length; i++) {
+        formU[i].readOnly = false;
+      }
+
+      let writer = document.getElementById("writerBox")
+      writer.readOnly = true;
+
+      //기존 수정하기 버튼 가리기
+      document.getElementById("upd_btn").style.display = "none";
+
+      document.getElementById("upd_sub").style.display = "inline";
+      let mainTitleU = document.getElementById("mainTitle");
+      mainTitleU.innerText = "게시글수정";
+
+      document.getElementById("onlyAttach").style.display = "inline";
+
+      let attBno = document.getElementsByClassName("attBno")
+      for (let i = 0; i < attBno.length; i++) {
+        attBno[i].style.display = "inline";
+      }
+    }
+
+  </script>
+  </body>
+</th:block>
+</html>

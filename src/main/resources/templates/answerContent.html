@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <meta charset="utf-8">
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/jquery-3.6.1.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>답변 읽기</title>
+  <style>
+    form {
+      text-align: center;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .btn-group {
+      float: right;
+    }
+
+    #main_btn {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    #del_btn {
+      background-color: #66b2ff;
+    }
+
+    #upd_btn, #upd_sub {
+      background-color: white;
+      color: black;
+    }
+
+    label {
+      float: left;
+    }
+
+    .form-control {
+      margin-bottom: 20px;
+    }
+
+    #main {
+      margin-top: 50px;
+    }
+
+    #mainTitle {
+      text-align: center;
+    }
+
+  </style>
+</head>
+<th:block layout:fragment="content">
+
+  <body>
+  <div class="container">
+    <h1 id="mainTitle">답변읽기</h1>
+    <div id="main">
+      <form action="/user/updateContent" method="post" id="contentForm" enctype="multipart/form-data"
+            th:each="myAnswerContent : ${myAnswerContent}">
+        <label for="titleBox" class="form-label fs-5 fw-bold">제목</label>
+        <input type="text" id="titleBox" class="form-control" name="title" readonly="readonly"
+               th:value="${myAnswerContent.title}">
+        <label for="writerBox" class="form-label fs-5 fw-bold">작성자</label>
+        <input type="text" id="writerBox" class="form-control" name="modifiedBy"
+               th:value="${myAnswerContent.modifiedBy}" readonly="readonly">
+        <label for="contentBox" class="form-label fs-5 fw-bold">내용</label>
+        <textarea rows="10" name="content" id="contentBox" class="form-control" readonly="readonly"
+                  th:text="${myAnswerContent.content}"></textarea>
+        <input type="file" id="onlyAttach" class="form-control" name="uploadFile" multiple
+               style="display: none">
+
+        <input type="hidden" name="id" th:value="${myAnswerContent.id}">
+        <input type="hidden" name="page" th:value="${page}">
+        <input type="hidden" name="boardType" th:value="${myAnswerContent.boardType}">
+
+        <div>
+          <div id="attachUl" th:if="${!attachList.isEmpty()}">
+            <ul th:each="attachList : ${attachList}" style="list-style: none">
+              <li>
+                <a th:href="@{/user/downloadFile(fileName = ${attachList.uuid}, uploadPath = ${attachList.uploadPath})}">
+                  <span th:text="${attachList.originName}"/></a>
+                <button type="button" th:value="${attachList.attBno}" class="attBno btn btn-primary"
+                        th:attr="data-att=${attachList.attBno}" id="attBno" style="display: none">삭제
+                </button>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <!--                        관리자의 경우에만 답변글을 수정,삭제할수있다.-->
+          <th:block th:if="${session.jyUserSession.role == 'ROLE_ADMIN'}">
+            <button type="button" class="btn btn-primary" id="upd_btn">수정</button>
+            <button type="submit" class="btn btn-primary" id="upd_sub" style="display: none">수정완료</button>
+            <button type="button" id="del_btn" class="btn btn-primary"
+                    th:onclick="|location.href='@{/user/deleteAnswer(id=${myAnswerContent.id},boardType=${myAnswerContent.boardType})}'|">
+              삭제
+            </button>
+          </th:block>
+          <button type="button" class="btn btn-primary" id="main_btn"
+                  th:onclick="|location.href='@{/user/boardList(page=${page},boardType=${myAnswerContent.boardType})}'|">
+            목록
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+  <script>
+    /*삭제버튼 누르면 화면에서 첨부파일 가리기*/
+    $(document).on("click", "#attBno", function (e) {//동적으로 생성된 버튼에 이벤트를 적용하려면 이 방식으로
+      let attList = e.target.closest('li');//closest 상위 태그 접근
+      let attDelBno = e.target.value;
+
+      let str = "";
+      str += '<input type="hidden" name="attBno" value=' + attDelBno + '>';
+      $('#contentForm').append(str);
+      attList.style.display = "none";//클릭한 버튼이 포함된 li 가리기
+
+    });
+
+    //수정버튼 클릭시 upd_btnE 함수를 실행해라
+    $("#upd_btn").click(function () {
+      upd_btnE();
+    });
+
+    //수정버튼 클릭시 upd_btnE 실행
+    function upd_btnE() {
+      //input의 class이름을 가지고 for문을 돌려서 readOnly를 false로(텍스트 수정가능하게)
+      let formU = document.getElementsByClassName("form-control");
+      for (let i = 0; i < formU.length; i++) {
+        formU[i].readOnly = false;
+      }
+      let writer = document.getElementById("writerBox")
+      writer.readOnly = true;
+
+      //기존 수정하기 버튼 가리기
+      document.getElementById("upd_btn").style.display = "none";
+      //수정완료 버튼 보이게 하기
+      document.getElementById("upd_sub").style.display = "inline";
+      let mainTitleU = document.getElementById("mainTitle");//게시글읽기->게시글수정으로 변경
+      mainTitleU.innerText = "답글수정";
+      //파일추가 보이게 하기
+      document.getElementById("onlyAttach").style.display = "inline";
+
+      //첨부파일있을때 삭제버튼 보이게하기
+      let attBno = document.getElementsByClassName("attBno")
+      for (let i = 0; i < attBno.length; i++) {
+        attBno[i].style.display = "inline";
+      }
+    }
+  </script>
+  </body>
+</th:block>
+</html>

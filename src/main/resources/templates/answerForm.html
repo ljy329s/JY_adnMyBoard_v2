@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>답변 폼</title>
+  <style>
+    form {
+      text-align: center;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .btn-group {
+      float: right;
+    }
+
+    #sub_btn {
+      background-color: #66b2ff;
+    }
+
+    #main_btn {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    label {
+      float: left;
+    }
+
+    .form-control {
+      margin-bottom: 20px;
+    }
+
+    #main {
+      margin-top: 50px;
+    }
+
+    #mainTitle {
+      text-align: center;
+    }
+  </style>
+</head>
+<th:block layout:fragment="content">
+
+  <body>
+  <div>
+    <div class="container">
+
+      <h1 id="mainTitle">답변작성</h1>
+      <div id="main">
+        <form action="/user/insertAnswer" method="post" enctype="multipart/form-data" onsubmit="return beforeCheck()">
+          <label for="titleBox" class="form-label fs-5 fw-bold">제목</label>
+          <input type="text" id="titleBox" class="form-control" name="title" required="required">
+          <label for="writerBox" class="form-label fs-5 fw-bold">작성자</label>
+          <input type="text" id="writerBox" class="form-control" name="createdBy"
+                 th:value="${session.jyUserSession.userName}" readonly="readonly">
+          <label for="contentBox" class="form-label fs-5 fw-bold">내용</label>
+          <textarea rows="10" name="content" id="contentBox" class="form-control" required="required"></textarea>
+
+          <input type="file" id="onlyAttach" class="form-control" name="uploadFile" multiple>
+
+          <!--     답글인지 게시글인지 구분하는 용도 groupBno      -->
+          <input type="hidden" name="groupBno" th:value="${id}">
+          <input type="hidden" name="boardType" th:value="${boardType}">
+
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="submit" class="btn btn-primary" id="sub_btn">등록</button>
+            <!--                        <button type="button" class="btn btn-primary" id="main_btn" th:onclick="|location.href='@{/user/boardList(boardType='QnA_Board')}'|">목록</button>-->
+            <button type="button" class="btn btn-primary" id="main_btn"
+                    th:onclick="|location.href='@{/user/boardList(boardType='QnA_Board')}'|">목록
+            </button>
+
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    function beforeCheck(){
+      if (!confirm("등록 하시겠습니까?")) {
+        alert("취소되었습니다")
+        return false;
+      } else {
+        alert("등록되었습니다.")
+        return true;
+      }
+    }
+  </script>
+  </body>
+</th:block>
+</html>

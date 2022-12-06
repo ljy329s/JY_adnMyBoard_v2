@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adnstyle.myboard.model.repository.JyAttachRepository">
+    <insert id="insertFile" parameterType="list">
+        INSERT INTO jy_attach
+            (uuid, uploadPath, originName, bno)
+        VALUES
+        <foreach collection="list" item="item" index="index" open="(" separator="),(" close=")">
+            #{item.uuid},
+            #{item.uploadPath},
+            #{item.originName},
+            #{item.bno}
+        </foreach>
+    </insert>
+
+    <select id="attachList" resultType="jyAttach">
+        SELECT attBno,
+               originName,
+               uuid,
+               uploadPath
+        FROM   jy_attach
+        WHERE  bno = #{id}
+        AND    del_yn = 'N'
+    </select>
+
+    <!--    게시글 삭제시 첨부파일도 함께 삭제-->
+    <delete id="deleteAll">
+        DELETE FROM jy_attach
+        WHERE bno = #{id}
+    </delete>
+
+    <delete id="deleteOnlyAttach">
+        DELETE FROM jy_attach
+        WHERE attBno IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="delAttachYn" parameterType="list">
+        UPDATE jy_attach
+        SET del_yn = 'Y'
+        WHERE attBno IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <insert id="insertOneFile" parameterType="jyAttach">
+        INSERT INTO jy_attach
+            (uuid, uploadPath, originName, fileType, profile_user_id)
+        VALUES (#{uuid},
+                #{uploadPath},
+                #{originName},
+                #{fileType},
+                #{profileUserId}
+                )
+    </insert>
+
+<!--    프로필정보 조회-->
+    <select id="findProfile" parameterType="string" resultType="jyAttach">
+        SELECT uuid, uploadPath
+        FROM jy_attach
+        WHERE profile_user_id = #{profileId}
+          AND del_yn = 'N'
+    </select>
+
+<!--    프로필 삭제 처리하기-->
+    <update id="delProfile" parameterType="string">
+        UPDATE jy_attach
+        SET del_yn ='Y'
+        WHERE profile_user_id = #{userId}
+    </update>
+
+<!--    프로필 존재하는지 확인-->
+    <select id="selectCountProfile" parameterType="string" resultType="_int">
+        SELECT count(uuid)
+        FROM jy_attach
+        WHERE profile_user_id = #{userId}
+        AND del_yn='N'
+    </select>
+
+</mapper>

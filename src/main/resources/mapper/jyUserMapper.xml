@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adnstyle.myboard.model.repository.JyUserRepository">
+<!-- 회원가입 원본-->
+    <insert id="insertNewUser" parameterType="jyUser">
+        INSERT INTO jy_user
+            (user_id, user_pw, user_name, user_phone, user_email, user_birth, role, reg_date)
+        VALUES
+            (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{userEmail}, #{userBirth}, #{role}, NOW())
+    </insert>
+<!--&lt;!&ndash;    회원가입 이미지 추가 &ndash;&gt;-->
+<!--    <insert id="insertNewUser" parameterType="jyUser">-->
+<!--        INSERT INTO jy_user-->
+<!--        (user_id, user_pw, user_name, user_phone, user_email, user_birth, role, reg_date, uploadPath, change_name, origin_name)-->
+<!--        VALUES-->
+<!--            (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{userEmail}, #{userBirth}, #{role}, NOW(), #{uploadPath}, #{changeName}, #{originName})-->
+<!--    </insert>-->
+
+    <select id="checkId" parameterType="string" resultType="int">
+        SELECT count(*)
+        FROM   jy_user
+        WHERE  user_id = #{userId}
+    </select>
+
+    <select id="checkEmail" parameterType="string" resultType="int">
+        SELECT count(*)
+        FROM jy_user
+        WHERE user_email = #{userEmail}
+    </select>
+
+    <select id="selectUser" parameterType="string" resultType="jyUser">
+        SELECT user_no,
+               user_id,
+               user_pw,
+               user_name,
+               user_phone,
+               user_email,
+               DATE_FORMAT(user_birth, '%Y-%m-%d') AS user_birth,
+               del_yn,
+               role,
+               reg_date,
+               end_date,
+               provider,
+               provider_id,
+               uploadPath,
+               change_name,
+               origin_name
+        FROM   jy_user
+        WHERE  user_id = #{userId}
+          AND  del_yn = 'N'
+    </select>
+
+<!--    소셜로그인시 회원등록-->
+    <insert id="insertNewScUser" parameterType="jyUser">
+        INSERT INTO jy_user
+            (user_id, user_pw,user_name, user_email , role, reg_date)
+        VALUES
+            (#{userId}, #{userPw},#{userName},#{userEmail}, #{role}, NOW())
+    </insert>
+
+<!--    소셜 로그인-->
+    <select id="selectScUser" resultType="jyUser">
+        SELECT user_id, user_name, user_pw, user_email, role, reg_date, provider,provider_id
+        FROM   jy_user
+        WHERE  user_id = #{userId}
+    </select>
+
+<!--    아이디 찾기-->
+    <select id="findId" resultType="string" parameterType="map">
+        SELECT user_id
+        FROM   jy_user
+        WHERE  user_name = #{userName}
+          AND  user_email = #{userEmail}
+    </select>
+
+<!--    회원정보 수정(마이페이지)-->
+    <update id="updateUser" parameterType="jyUser">
+        UPDATE jy_user
+        SET   user_name = #{userName},
+               user_birth = #{userBirth},
+               user_phone = #{userPhone},
+               user_email = #{userEmail}
+        WHERE  user_id = #{userId}
+    </update>
+</mapper>

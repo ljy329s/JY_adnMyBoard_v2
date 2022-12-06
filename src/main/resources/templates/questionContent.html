@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <meta charset="utf-8">
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/jquery-3.6.1.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>게시글 읽기</title>
+  <style>
+    form {
+      text-align: center;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    #upd_btn, #del_btn, #upd_sub {
+      background-color: #66b2ff;
+    }
+
+    #main_btn {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    label {
+      float: left;
+    }
+
+    .form-control {
+      margin-bottom: 20px;
+    }
+
+    #main {
+      margin-top: 50px;
+    }
+
+    #mainTitle {
+      text-align: center;
+    }
+
+    #answer_btn {
+      float: right;
+    }
+
+    #btnBox {
+      display: flex;
+    }
+
+  </style>
+</head>
+<th:block layout:fragment="content">
+
+  <body>
+  <div>
+    <div class="container">
+
+      <h1 id="mainTitle">문의글읽기</h1>
+      <div id="main">
+        <form action="/user/updateContent" method="post" id="contentForm" enctype="multipart/form-data"
+              th:each=" myQnAContent : ${myQnAContent}">
+          <label for="titleBox" class="form-label fs-5 fw-bold">제목</label>
+          <input type="text" id="titleBox" class="form-control" name="title" th:value="${myQnAContent.title}"
+                 readonly="readonly">
+          <label for="writerBox" class="form-label fs-5 fw-bold">작성자</label>
+          <input type="text" id="writerBox" class="form-control" name="modifiedBy"
+                 th:value="${myQnAContent.modifiedBy}" readonly="readonly">
+          <label for="contentBox" class="form-label fs-5 fw-bold">내용</label>
+          <textarea rows="20" name="content" id="contentBox" th:text="${myQnAContent.content}"
+                    class="form-control" readonly="readonly"/>
+          <input type="file" id="onlyAttach" class="form-control" style="display: none" name="uploadFile"
+                 multiple>
+
+          <input type="hidden" name="id" th:value="${myQnAContent.id}">
+          <input type="hidden" name="boardType" th:value="${myQnAContent.boardType}">
+          <input type="hidden" name="page" th:value="${page}">
+
+          <div>
+            <div id="attachUl" th:if="${!attachList.isEmpty()}">
+              <ul th:each="attachList : ${attachList}" class="checkboxList" style="list-style: none">
+                <li>
+                  <a th:href="@{/user/downloadFile(fileName = ${attachList.uuid}, uploadPath = ${attachList.uploadPath})}">
+                    <span th:text="${attachList.originName}"/></a>
+                  <button type="button" th:value="${attachList.attBno}" class="attBno btn btn-primary"
+                          th:attr="data-att=${attachList.attBno}" id="attBno" style="display: none">삭제
+                  </button>
+
+                </li>
+              </ul>
+            </div>
+
+          </div>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <!--글 작성자일 경우에만 수정,삭제 버튼이 보인다-->
+            <th:block th:if="${session.jyUserSession.userId == myQnAContent.modifiedBy}">
+              <button type="button" class="btn btn-primary" id="upd_btn" style="display: inline">수정하기</button>
+              <button type="submit" class="btn btn-primary" id="upd_sub" style="display: none">수정완료</button>
+            </th:block>
+            <button type="button" id="main_btn" class="btn btn-primary"
+                    th:onclick="|location.href='@{/user/boardList(page=${page},boardType=${myQnAContent.boardType})}'|">
+              목록
+            </button>
+            <th:block th:if="${session.jyUserSession.userName == myQnAContent.modifiedBy}">
+              <button type="button" id="del_btn" class="btn btn-primary"
+                      th:onclick="|location.href='@{/user/deleteContent(id=${myQnAContent.id},boardType=${myQnAContent.boardType})}'|">
+                삭제
+              </button>
+            </th:block>
+          </div>
+          <div id="btnBox">
+            <!--                        관리자일 경우에만 답글달기 버튼이 보임-->
+            <th:block th:if="${session.jyUserSession.role == 'ROLE_ADMIN'}">
+              <button type="button" class="btn btn-primary" id="answer_btn" style="display: inline"
+                      th:onclick="|location.href='@{/user/answerForm(id=${myQnAContent.id},boardType=${myQnAContent.boardType})}'|">답글달기
+              </button>
+            </th:block>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*삭제버튼 누르면 화면에서 첨부파일 가리기*/
+    $(document).on("click", "#attBno", function (e) {//동적으로 생성된 버튼에 이벤트를 적용하려면 이 방식으로
+      let attList = e.target.closest('li');//closest 상위 태그 접근
+      let attDelBno = e.target.value;
+
+      let str = "";
+      str += '<input type="hidden" name="attBno" value=' + attDelBno + '>';
+      $('#contentForm').append(str);
+      attList.style.display = "none";//클릭한 버튼이 포함된 li 가리기
+
+    });
+
+    //수정버튼 클릭시 upd_btnE 함수를 실행해라
+    $("#upd_btn").click(function () {
+      upd_btnE();
+    });
+
+    //수정버튼 클릭시 upd_btnE 실행
+    function upd_btnE() {
+      //input의 class이름을 가지고 for문을 돌려서 readOnly를 false로(텍스트 수정가능하게)
+      let formU = document.getElementsByClassName("form-control");
+      for (let i = 0; i < formU.length; i++) {
+        formU[i].readOnly = false;
+      }
+      let writer = document.getElementById("writerBox")
+      writer.readOnly = true;
+      //기존 수정하기 버튼 가리기
+      document.getElementById("upd_btn").style.display = "none";
+      //수정완료 버튼 보이게 하기
+      document.getElementById("upd_sub").style.display = "inline";
+      let mainTitleU = document.getElementById("mainTitle");//게시글읽기->게시글수정으로 변경
+      mainTitleU.innerText = "문의글수정";
+      //파일추가 보이게 하기
+      document.getElementById("onlyAttach").style.display = "inline";
+
+      //첨부파일있을때 삭제버튼 보이게하기
+      let attBno = document.getElementsByClassName("attBno")
+      for (let i = 0; i < attBno.length; i++) {
+        attBno[i].style.display = "inline";
+      }
+    }
+
+
+    $(document).ready(function () {
+      selectReplyList();
+    })
+
+  </script>
+
+  </body>
+</th:block>
+</html>

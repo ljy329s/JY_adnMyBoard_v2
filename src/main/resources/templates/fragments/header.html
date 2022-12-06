@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<th:block th:fragment="headerFragment">
+  <style>
+    #user {
+      height: 170px;
+      background-color: #cff4fc;
+      padding: 30px;
+    }
+    
+    #loginInfo {
+      text-align: center;
+      background-color: white;
+      border-radius: 10px;
+      float: right;
+      padding: 10px;
+      width: 200px;
+      border: #85cdff solid 2px;
+    }
+    
+    ul {
+      list-style: none;
+    }
+    
+    .nav-item:hover {
+      background-color: #85cdff;
+    }
+    
+    .nav-link:hover {
+      color: white;
+      text-decoration: none;
+    }
+    
+    a {
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    a:visited, a:link {
+      color: black;
+    }
+    
+    .login_profile {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+    
+    #LoginProfileBox {
+      text-align: center;
+    }
+  
+  
+  </style>
+  
+  <header>
+    <div id="user">
+      <ul id="loginInfo">
+        <div id="LoginProfileBox">
+        </div>
+        <th:block th:if="${session.jyUserSession != null}">
+          <li th:text="${session.jyUserSession.userName} + 님 +' '+안녕하세요"></li>
+          <li>
+            <button type="button" onclick="location.href='/logout'" id="logout"
+                    class="btn btn-outline-dark">로그아웃
+            </button>
+          </li>
+        </th:block>
+        <th:block th:unless="${session.jyUserSession != null}">
+          <li>로그인 해주세요</li>
+          <li>
+            <button type="button" onclick="location.href='/loginForm'" class="btn btn-outline-dark">로그인
+            </button>
+          </li>
+        </th:block>
+      </ul>
+    </div>
+    <ul class="nav nav-pills nav-fill">
+      
+      <li class="nav-item" id="nav01">
+        <a class="nav-link nav1" aria-current="page" href="/" value="main">메인화면</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link nav2" th:href="@{/user/boardList(boardType='QnA_Board')}">문의하기</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link nav3" th:href="@{/user/boardList(boardType='Free_Board')}">자유게시판</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link nav4" href="/user/myPage">마이페이지</a>
+      </li>
+    </ul>
+  </header>
+  <script th:inline="javascript">
+    let JyUserSession = [[${session.jyUserSession}]]
+    console.log("JyUserSession" + JyUserSession);
+  </script>
+  <script>
+    $("#logout").click(function () {
+      alert("로그아웃 했습니다");
+    })
+    
+  </script>
+</th:block>
+</html>

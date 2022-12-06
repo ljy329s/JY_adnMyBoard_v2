@@ -1,0 +1,118 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://192.168.1.84:3306/a_ljy_db
+    username: a_ljy_user
+    password: '!adnstyleDB'
+
+  security:
+    user:
+      name: user
+      password: 1234
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 897513673247-d40vq7h6k93ta0ue53dbfrs9a3hrabfk.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:templates/
+    suffix: .html
+
+mybatis:
+  type-aliases-package: com.adnstyle.myboard.model.domain
+  mapper-locations: mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  config: classpath:log/logback-spring.xml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  file-upload:
+    save-dir: /Users/dalnu/upload/
+    save-user-dir: /Users/dalnu/upload_profile/
+#    save-dir: C:\\upload\
+#    save-user-dir: C:\\upload_profile\
+
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: 8003
+  error:
+    whitelabel:
+      enabled: false
+
+#spring:
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://localhost:3306/ljy329s
+#    username: root
+#    password: '1234'
+#
+#  security:
+#    user:
+#      name: user
+#      password: 1234
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: 897513673247-d40vq7h6k93ta0ue53dbfrs9a3hrabfk.apps.googleusercontent.com
+#            client-secret: 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
+#            scope:
+#              - email
+#              - profile
+#
+#  file-upload:
+#    save-dir: C:\\upload
+#
+#  servlet:
+#    multipart:
+#      max-file-size: 50MB
+#      max-request-size: 50MB
+#  thymeleaf:
+#    cache: false
+#    prefix: classpath:templates/
+#    suffix: .html
+#
+#logging:
+#  config: classpath:log/logback-spring.xml
+#
+#mybatis:
+#  type-aliases-package: com.adnstyle.myboard.model.domain
+#  mapper-locations: mapper/*.xml
+#  configuration:
+#    map-underscore-to-camel-case: true
+#
+#server:
+#  port: 8080
+#  error:
+#    whitelabel:
+#      enabled: false
+

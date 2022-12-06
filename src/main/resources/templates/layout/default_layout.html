@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="UTF-8">
+    <title>Title for you</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="../js/jquery-3.6.1.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="/img/logo_favicon.png">
+
+</head>
+<body>
+<th:block th:replace="/fragments/header :: headerFragment"></th:block>
+
+<th:block layout:fragment="content"></th:block>
+
+<th:block th:replace="/fragments/footer :: footerFragment"></th:block>
+</body>
+</html>

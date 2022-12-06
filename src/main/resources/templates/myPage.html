@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <meta charset="utf-8">
+  <script src="/js/jquery-3.6.1.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>마이페이지</title>
+  <style>
+    .myPageCard {
+      padding: 10px;
+    }
+    
+    #profileBox {
+      text-align: center;
+      margin: 10px;
+    }
+    
+    .profile {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+    }
+    
+    #profileBtnBox {
+      margin: 10px;
+      display: none;
+    }
+    
+    .test2 {
+      background: red;
+    }
+  
+  
+  </style>
+</head>
+<th:block layout:fragment="content">
+  <body>
+  <div class="d-flex justify-content-center mt-5 myPageCard">
+    <div class="col-4 card">
+      <div class="card-body">
+        <form action="/user/updateMyPage" method="POST" enctype="multipart/form-data" onsubmit="return beforeCheck()">
+          <div id="profileBox">
+            <th:block th:if="${profile != null}">
+              <th:block th:if="${profile.uuid != null}">
+                <img class="profile"
+                     th:src="@{/user/downloadFile(fileName = ${profile.uuid}, uploadPath = ${profile.uploadPath})}"
+                     onerror="this.src='/img/none_profile.png'" alt="userProfile">
+              </th:block>
+            </th:block>
+            <th:block th:if="${profile} == null or ${profile.uuid} == null">
+              <img src='/img/none_profile.png' alt="noneProfile" class="profile">
+            </th:block>
+            <div id="profileBtnBox">
+              <input type="file" id="profileUpBtn" class="btn" value="프로필 변경" onchange="readURL(this)"
+                     accept=".png,.jpg,.jepg" name="uploadFile"/>
+<!--              <button type="button" id="profileDelBtn" onclick="profileDelBtn()" class="btn btn-dark">프로필 삭제</button>-->
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="userName">이름</label>
+            <input type="text" class="form-control myPage" id="userName" th:value="${session.jyUserSession.userName}"
+                   readonly="readonly" name="userName" required>
+          </div>
+          <div class="form-group">
+            <label for="userBirth">생년월일</label>
+            <input type="date" class="form-control myPage" id="userBirth"
+                   th:value="${session.jyUserSession.userBirth}" readonly="readonly" name="userBirth" required>
+          </div>
+          <div class="form-group">
+            <label for="userPhone">휴대폰번호</label>
+            <input type="text" class="form-control myPage" id="userPhone"
+                   th:value="${session.jyUserSession.userPhone}" readonly="readonly" name="userPhone" required>
+          </div>
+          <div class="form-group">
+            <label for="userEmail">이메일</label>
+            <input type="text" class="form-control myPage" id="userEmail"
+                   th:value="${session.jyUserSession.userEmail}" readonly="readonly" name="userEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="regDate">가입일자</label>
+            <input type="text" class="form-control" id="regDate"
+                   th:value="${session.jyUserSession.regDate}" readonly="readonly">
+          </div>
+          <input type="hidden" th:value="${session.jyUserSession.userId}" name="userId">
+          
+          <div class="form-group">
+            <button type="button" id="updateMP" class="btn btn-outline-info">수정</button>
+            <button type="submit" id="updateMPS" class="btn btn-outline-info" style="display: none">수정완료</button>
+            <button type="button" id="mpBack" class="btn btn-outline-info" style="display: none"
+                    onclick="location.href='/user/myPage'">취소
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script>
+    
+    $("#updateMP").click(function () {
+      upd_btnE();
+    });
+    
+    function upd_btnE() {
+      $("#updateMPS").css('display', 'inline');
+      $("#mpBack").css('display', 'inline');
+      $("#updateMP").css('display', 'none');
+      
+      $("#profileBtnBox").css('display', 'block')
+      let myForm = $(".myPage");
+      for (let i = 0; i < myForm.length; i++) {
+        myForm[i].readOnly = false;
+      }
+    }
+    
+    function readURL(input) {
+      let profile = document.getElementsByClassName("profile")
+      if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+          profile[0].src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        profile[0].src = '/img/none_profile.png';
+      }
+    };
+    
+    // function profileDelBtn() {
+    //   alert("프로필 삭제 버튼클릭");
+    //   let profile = document.getElementsByClassName("profile");
+    //   profile[0].src = '/img/none_profile.png';
+    // }
+    
+    function beforeCheck() {
+      if (!confirm("수정하시겠습니까? 다시 로그인 하셔야합니다.")) {
+        alert("취소되었습니다.");
+        return false;
+      } else {
+        alert("수정되었습니다. 다시 로그인 해주세요~");
+        return true;
+      }
+    }
+  </script>
+  </body>
+</th:block>
+</html>

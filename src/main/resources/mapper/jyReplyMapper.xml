@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adnstyle.myboard.model.repository.JyReplyRepository">
+    <insert id="insertReply" parameterType="jyReply">
+        INSERT INTO jy_reply(re_content, re_created_by, re_created_date, re_modified_date, board_bno)
+        VALUES (#{reContent}, #{reCreatedBy}, NOW(), NOW(), #{boardBno})
+    </insert>
+
+    <select id="selectMaxReBno" resultType="long">
+        SELECT re_bno
+        FROM jy_reply
+        ORDER BY re_bno DESC LIMIT 1
+    </select>
+
+    <update id="updateGroupBno" parameterType="long">
+        UPDATE jy_reply
+        SET    re_group_bno=#{bno}
+        WHERE  re_bno = #{bno}
+    </update>
+
+    <select id="selectReplyList" resultType="jyReply" parameterType="map">
+ <![CDATA[
+        SELECT re_bno,
+               re_group_bno,
+               re_content,
+               re_created_by,
+               re_created_date,
+               re_modified_date,
+               board_bno,
+               re_del_yn,
+               re_depth,
+               re_order
+        FROM   jy_reply
+        WHERE  board_bno = #{id}
+        ORDER BY re_group_bno DESC , re_order ASC, re_depth ASC
+        LIMIT #{offset}, #{pageSize}
+        ]]>
+    </select>
+
+    <!--    댓글 정렬번호 업데이트-->
+    <update id="updateOrderBno">
+        <![CDATA[
+        UPDATE jy_reply
+        SET    re_order = re_order + 1
+        WHERE  re_order > #{reOrder}
+          AND  re_group_bno = #{reGroupBno}
+          AND  board_bno = #{boardBno};
+        ]]>
+    </update>
+
+    <!--    대댓글 등록-->
+    <insert id="insertChildReply">
+        INSERT INTO jy_reply(re_content, re_created_by, re_created_date, re_modified_date, board_bno, re_depth,
+                             re_order, re_group_bno)
+        VALUES (#{reContent}, #{reCreatedBy}, NOW(), NOW(), #{boardBno}, #{reDepth} + 1, #{reOrder} + 1, #{reGroupBno});
+    </insert>
+
+    <!--    댓글삭제 -->
+    <update id="deleteReply" parameterType="long">
+        UPDATE jy_reply
+        SET    re_del_yn ='Y'
+        WHERE  re_bno = #{delReBno}
+    </update>
+
+    <!-- 대댓글달기-부모 댓글정보 불러오기-->
+    <select id="selectReply" parameterType="long" resultType="jyReply">
+        SELECT *
+        FROM   jy_reply
+        WHERE  re_bno = #{reBno}
+    </select>
+
+    <!--    해당 게시물의 댓글갯수-->
+    <select id="selectReplyCountAll" parameterType="long" resultType="int">
+        SELECT count(*)
+        FROM   jy_reply
+        WHERE  board_bno = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout}">
+<head>
+  <meta charset="utf-8">
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/jquery-3.6.1.min.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>비밀번호찾기</title>
+  <style>
+    #findPw {
+      margin-top: 50px;
+    }
+
+    #btnBox {
+      text-align: center;
+    }
+  </style>
+</head>
+<th:block layout:fragment="content">
+
+  <body>
+  <div class="container">
+    <div class="d-flex justify-content-center mt-5">
+
+      <div class="card col-5">
+        <div class="card-header text-center">
+          <span><a href="/findIdPw">아이디찾기</a></span>
+          <span>/</span>
+          <span><a href="/findPw">비밀번호 찾기</a></span>
+        </div>
+        <div class="card-body">
+          <form id="selectFindPw" method="post">
+            <div>
+              <label for="userId">아이디</label>
+              <input type="text" name="userId" id="userId" class="form-control">
+            </div>
+            <div>
+              <label for="userName">이름</label>
+              <input type="text" name="userName" id="userName" class="form-control">
+            </div>
+            <div>
+              <label for="userEmail">이메일</label>
+              <input type="text" name="userEmail" id="userEmail" class="form-control">
+            </div>
+            <div id="btnBox">
+              <button type="button" id="findPw" class="btn btn-outline-info">비밀번호 찾기</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </body>
+</th:block>
+</html>
