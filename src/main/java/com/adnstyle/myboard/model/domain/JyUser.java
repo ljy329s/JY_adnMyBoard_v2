@@ -46,7 +46,7 @@ public class JyUser {
      * 고객생년월일
      */
     //input type date로 넘어온값은 string이라 date로 저장하려니 에러남
-    //데이트타입포맷 꼭 해주기
+    //데이트타입포맷 꼭 해주기!
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date userBirth;//import java.sql.Date 로 해주기 그래야 db와 같은 형식으로 조회됨
 

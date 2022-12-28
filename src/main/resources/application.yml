@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://192.168.1.84:3306/a_ljy_db
-    username: a_ljy_user
-    password: '!adnstyleDB'
+    url: jdbc:mariadb://14.63.226.76:9606/ljy_db
+    username: ljy_user
+    password: "!ljyUser329"
 
   security:
     user:
@@ -116,3 +116,76 @@ server:
 #    whitelabel:
 #      enabled: false
 
+
+
+#  create table jy_attach
+#  (
+#  uuid            varchar(100)                not null comment '저장명',
+#  upload_path      varchar(200)                not null comment '저장경로',
+#  origin_name      varchar(100)                not null comment '원본명',
+#  file_type        varchar(50) default 'Image' null comment '파일타입',
+#  bno             bigint                      null comment '게시글번호',
+#  del_yn          varchar(1)  default 'N'     not null comment '삭제여부',
+#  attBno          int auto_increment
+#  primary key comment '첨부파일번호',
+#  profile_user_id varchar(100)                null comment '프로필 유저 아이디'
+#  )
+#  comment '첨부파일 테이블';
+#
+#  create table jy_board
+#  (
+#  id            bigint auto_increment comment '식별자'
+#  primary key,
+#  title         varchar(100)           null comment '제목',
+#  content       text                   null comment '내용',
+#  del_yn        varchar(1) default 'N' null comment '삭제여부',
+#  view_count    int                    null comment '조회수',
+#  created_by    varchar(100)           null comment '작성자',
+#  created_date  datetime(6)            null comment '작성일',
+#  modified_by   varchar(100)           null comment '수정자',
+#  modified_date datetime(6)            null comment '수정일',
+#  board_type    varchar(20)            not null comment '게시판타입',
+#  group_bno     bigint                 null comment '그룹번호'
+#  )
+#  comment '게시판 테이블';
+#
+#  create table jy_reply
+#  (
+#  re_bno           bigint auto_increment comment '리플번호'
+#  primary key,
+#  re_content       varchar(500)           null comment '댓글내용',
+#  re_created_by    varchar(50)            null comment '작성자',
+#  re_created_date  datetime               null comment '댓글작성일',
+#  re_modified_date datetime               null comment '댓글수정일',
+#  board_bno        bigint                 null comment '원글 게시글 번호',
+#  re_del_yn        varchar(1) default 'N' null comment '댓글삭제여부',
+#  re_depth         int        default 0   null comment '댓글계층',
+#  re_order         int        default 0   null comment '댓글정렬',
+#  re_group_bno     bigint                 null comment '댓글그룹번호'
+#  )
+#  comment '댓글 테이블';
+#
+#  create table jy_user
+#  (
+#  user_no     bigint auto_increment comment '고객번호'
+#  primary key,
+#  user_id     varchar(100)               not null comment '고객아이디',
+#  user_pw     varchar(100)               not null comment '고객비밀번호',
+#  user_name   varchar(100)               not null comment '고객명',
+#  user_phone  varchar(100)               null comment '고객휴대폰번호',
+#  user_email  varchar(100)               null comment '고객이메일',
+#  user_birth  date                       null comment '고객생년월일',
+#  del_yn      varchar(1)  default 'N'    null comment '삭제여부',
+#  role        varchar(50) default 'user' null comment '권한',
+#  reg_date    datetime                   null comment '가입일자',
+#  end_date    datetime                   null comment '탈퇴일자',
+#  provider    varchar(10)                null,
+#  provider_id varchar(255)               null,
+#  upload_path  varchar(200)               null comment '저장위치',
+#  change_name varchar(200)               null comment '저장된 이름',
+#  origin_name varchar(100)               null comment '원본명',
+#  constraint user_id
+#  unique (user_id)
+#  )
+#  comment '고객 테이블';
+#

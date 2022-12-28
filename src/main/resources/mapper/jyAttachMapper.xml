@@ -3,7 +3,7 @@
 <mapper namespace="com.adnstyle.myboard.model.repository.JyAttachRepository">
     <insert id="insertFile" parameterType="list">
         INSERT INTO jy_attach
-            (uuid, uploadPath, originName, bno)
+            (uuid, upload_path, origin_name, bno)
         VALUES
         <foreach collection="list" item="item" index="index" open="(" separator="),(" close=")">
             #{item.uuid},
@@ -14,10 +14,10 @@
     </insert>
 
     <select id="attachList" resultType="jyAttach">
-        SELECT attBno,
-               originName,
+        SELECT att_bno,
+               origin_name,
                uuid,
-               uploadPath
+               upload_path
         FROM   jy_attach
         WHERE  bno = #{id}
         AND    del_yn = 'N'
@@ -31,7 +31,7 @@
 
     <delete id="deleteOnlyAttach">
         DELETE FROM jy_attach
-        WHERE attBno IN
+        WHERE att_bno IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -40,7 +40,7 @@
     <update id="delAttachYn" parameterType="list">
         UPDATE jy_attach
         SET del_yn = 'Y'
-        WHERE attBno IN
+        WHERE att_bno IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -48,7 +48,7 @@
 
     <insert id="insertOneFile" parameterType="jyAttach">
         INSERT INTO jy_attach
-            (uuid, uploadPath, originName, fileType, profile_user_id)
+            (uuid, upload_path, origin_name, file_type, profile_user_id)
         VALUES (#{uuid},
                 #{uploadPath},
                 #{originName},
@@ -59,7 +59,7 @@
 
 <!--    프로필정보 조회-->
     <select id="findProfile" parameterType="string" resultType="jyAttach">
-        SELECT uuid, uploadPath
+        SELECT uuid, upload_path
         FROM jy_attach
         WHERE profile_user_id = #{profileId}
           AND del_yn = 'N'

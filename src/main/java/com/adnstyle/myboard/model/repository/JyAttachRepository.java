@@ -54,4 +54,5 @@ public interface JyAttachRepository {
      * 기존에 프로필 이미지 등록되어있는지 확인
      */
     int selectCountProfile(String userId);
+    
 }

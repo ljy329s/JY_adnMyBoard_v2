@@ -42,7 +42,7 @@
                end_date,
                provider,
                provider_id,
-               uploadPath,
+               upload_path,
                change_name,
                origin_name
         FROM   jy_user
