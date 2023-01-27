@@ -3,6 +3,7 @@ package com.adnstyle.myboard.jwt;
 
 import com.adnstyle.myboard.auth.PrincipalDetails;
 import com.adnstyle.myboard.common.JwtYml;
+import com.adnstyle.myboard.controller.JyUserController;
 import com.adnstyle.myboard.model.domain.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtYml jwtYml;
 
     private final TokenProvider tokenProvider;
+    
+    private final JyUserController jyUserController;
+    
 
     /**
      * 엑세스토큰 만료시간 : 1분
@@ -48,6 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      * //
      */
     private long refreshTokenValidTime = Duration.ofMinutes(3).toMillis();
+    
 
 
     /**
@@ -56,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        System.out.println("로그인시도");
+        System.out.println("====================로그인시도를 위해서 실행되는 메서드 시작===============================");
 
         ObjectMapper om = new ObjectMapper();
 
@@ -66,8 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             //Authenticate 를 위한 UserPasswordAuthenticationToken 을 발행한다.
 
             Login login = om.readValue(request.getInputStream(), Login.class);
-            System.out.println("login : " + login.toString());
-
+           
             //username, password를 이용해서 UsernamePasswordAuthenticationToken 발급
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword());
@@ -91,9 +95,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-            System.out.println(principalDetails.getUsername());//내코드
-            System.out.println(principalDetails.getPassword());//내코드
-
+            System.out.println(principalDetails.getUsername());
+            System.out.println(principalDetails.getPassword());
             System.out.println("반환");
 
             return authentication;//authentication을 반환하면 세션에 저장된다. 아마도 시큐리티 세션?
@@ -136,16 +139,34 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         System.out.println("token : " + "Bearer " + accToken);
 
         System.out.println("==================response.addHeader 시작==================");
-        //response.addHeader("Authorization", "Bearer " + accToken);//나중엔 토큰을 쿠키에 저장하자
        
         Cookie cookie = new Cookie("Authorization", "Bearer_" + accToken);
         cookie.setHttpOnly(true);
-        
+        cookie.setPath("/");//쿠키경로 설정 모든경로에서 "/" 사용하겠다
+        cookie.setMaxAge(60 * 2);//초단위로 설정됨 yml에 설정한 엑세스토큰의 만료시간인 120000 즉 2분으로 설정
         response.addCookie(cookie);
+      
+        jyUserController.successLogin(cookie);
+      //  loginUser(principal);
+        
+     
 
 
     }
 
+//    /**
+//     * 세션생성
+//     */
+//    private void loginUser(PrincipalDetails principal) {
+//        System.out.println("세션생성");
+//
+//        JyUser jyUserSession = principal.getJyUser();
+//        System.out.println("jyUserSession"+jyUserSession);
+//        session.setAttribute("jyUserSession", jyUserSession);
+//
+////
+//    }
+    
     /**
      *로그인 실패시 호출되는 메서드
      * AuthenticationService에서 발생하는 exception handling
@@ -155,4 +176,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         System.out.println("로그인실패시 돌게 될곳");
         super.unsuccessfulAuthentication(request, response, failed);
     }
+    
 }

@@ -32,7 +32,7 @@ spring:
 jwt:
   header: Authorization
   secret-key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
-  prefix: Bearer
+  prefix: Bearer_
   access-time: 120000
   refresh-time: 1814400000
 
@@ -126,6 +126,17 @@ server:
 #  error:
 #    whitelabel:
 #      enabled: false
+
+#jwt:
+#  header: Authorization
+#  secret-key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+#  prefix: Bearer_
+#  access-time: 120000
+#  refresh-time: 1814400000
+#
+#redis:
+#  host: localhost
+#  port: 6379
 
 
 

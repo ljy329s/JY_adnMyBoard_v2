@@ -100,12 +100,16 @@
   <script th:inline="javascript">
     let JyUserSession = [[${session.jyUserSession}]]
     console.log("JyUserSession" + JyUserSession);
+    
   </script>
+  
   <script>
     $("#logout").click(function () {
       alert("로그아웃 했습니다");
     })
     
   </script>
+
+
 </th:block>
 </html>

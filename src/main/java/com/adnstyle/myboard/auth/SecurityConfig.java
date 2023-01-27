@@ -33,15 +33,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.csrf().disable();//csrf.비활성화
+        
         http
                 .authorizeRequests()
-                .antMatchers("/user/**").authenticated()
-//                .antMatchers("/manager/**").access("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')")
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .anyRequest().permitAll()
+//              .antMatchers("/user/**").authenticated()
+           // .antMatchers("/user/boardList").permitAll()
+////                .antMatchers("/manager/**").access("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')")
+//                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/user/**").permitAll()
                     .and()
+            .csrf().disable()
             .httpBasic().disable()
             .addFilter(corsConfig.corsFilter())
             .csrf().disable()

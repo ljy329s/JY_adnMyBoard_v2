@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.Map;
@@ -181,5 +182,17 @@ public class JyUserController {
         jyUserService.updateMyPage(uploadFile, jyUser);
         
         return "redirect:/logout";
+    }
+    
+    //로그인성공시..
+    
+    @PostMapping("/successLogin")
+    public String successLogin(Cookie cookie){
+        
+        System.out.println("로그인 성공후 이동하게 될 경로");
+        System.out.println("cookie :" + cookie);
+        
+        return "jyHome";
+        
     }
 }

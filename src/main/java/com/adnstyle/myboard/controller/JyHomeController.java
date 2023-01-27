@@ -16,6 +16,8 @@ public class JyHomeController {
     @GetMapping("/")
     public String jyHome() {
         
+        
+        
         log.debug("메인화면 접속");
 
         return "jyHome";
