@@ -27,27 +27,27 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         String provider = userRequest.getClientRegistration().getClientName();
         String providerId = oAuth2User.getAttribute("sub");
-        String userId = provider + "_" + providerId;
+        String username = provider + "_" + providerId;
         String password = bCryptPasswordEncoder.encode("비밀번호");//OAuth방식에는 크게 의미가 없지만 그냥 만들어봄
         String email = oAuth2User.getAttribute("email");
-        String role = "ROLE_USER";
-        String username = oAuth2User.getAttribute("name");
+        String roles = "ROLE_USER";
+        String name = oAuth2User.getAttribute("name");
 
         //중복가입하면 안되니까 해당아이디로 가입여부 조회
         JyUser jyUser = new JyUser();
-        if (jyUserRepository.selectUser(userId) == null) {//아이디 조회하는 메서드
-            jyUser.setUserId(userId);
-            jyUser.setUserName(username);
-            jyUser.setUserPw(password);
+        if (jyUserRepository.selectUser(username) == null) {//아이디 조회하는 메서드
+            jyUser.setUsername(username);
+            jyUser.setName(name);
+            jyUser.setPassword(password);
             jyUser.setUserEmail(email);
-            jyUser.setRole(role);
+            jyUser.setRoles(roles);
             jyUser.setProvider(provider);
             jyUser.setProviderId(providerId);
 
             jyUserService.insertNewScUser(jyUser);
 
         } else {
-            jyUser = jyUserRepository.selectScUser(userId);
+            jyUser = jyUserRepository.selectScUser(username);
         }
         return new PrincipalDetails(jyUser, oAuth2User.getAttributes());
     }

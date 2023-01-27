@@ -149,7 +149,7 @@ public class JyUserController {
         log.debug("마이페이지 세션 : " + jyUser);
         
         //여기에서 아이디로 조회해서 changeName, uploadPath구해야함
-        String profileId = jyUser.getUserId();
+        String profileId = jyUser.getUsername();
         
         JyAttach profile = jyAttachService.findProfile(profileId);
         
@@ -165,18 +165,18 @@ public class JyUserController {
      * 마이페이지 정보 업데이트 왜 model로는 안받와질까..
      */
     @PostMapping("/user/updateMyPage")
-    public String updateMyPage(MultipartFile uploadFile, @RequestParam("userName")String userName, @RequestParam(value = "userBirth") Date userBirth, @RequestParam("userPhone") String userPhone, @RequestParam(value = "userEmail")String userEmail, @RequestParam("userId") String userId) {
+    public String updateMyPage(MultipartFile uploadFile, @RequestParam("name")String name, @RequestParam(value = "userBirth") Date userBirth, @RequestParam("userPhone") String userPhone, @RequestParam(value = "userEmail")String userEmail, @RequestParam("username") String username) {
 //        public String updateMyPage(MultipartFile uploadFile, @ModelAttribute JyUser jyUser) {
         log.debug("uploadFile : " + uploadFile);
 //        log.debug("jyUser : "+ jyUser);
-        log.debug("user 정보 " + userName + ", userBirth" +userBirth +", userPhone : "+userPhone+", userEmail"+userEmail);
+        log.debug("user 정보 " + name + ", userBirth" +userBirth +", userPhone : "+userPhone+", userEmail"+userEmail);
 
         JyUser jyUser = new JyUser();
-        jyUser.setUserName(userName);
+        jyUser.setUsername(name);
         jyUser.setUserBirth(userBirth);
         jyUser.setUserPhone(userPhone);
         jyUser.setUserEmail(userEmail);
-        jyUser.setUserId(userId);
+        jyUser.setUsername(username);
         log.debug("jyUser"+jyUser);
         jyUserService.updateMyPage(uploadFile, jyUser);
         

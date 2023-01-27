@@ -1,5 +1,6 @@
 package com.adnstyle.myboard.model.domain;
 
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
@@ -7,6 +8,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Alias("jyUser")
 @Data
@@ -20,17 +24,17 @@ public class JyUser {
     /**
      * 고객아이디
      */
-    private String userId;
+    private String username;
 
     /**
      * 고객비밀번호
      */
-    private String userPw;
+    private String password;
 
     /**
      * 고객이름
      */
-    private String userName;
+    private String name;
 
     /**
      * 고객휴대폰번호
@@ -58,7 +62,7 @@ public class JyUser {
     /**
      * 권한
      */
-    private String role;
+    private String roles;
 
     /**
      * 가입일자
@@ -96,14 +100,25 @@ public class JyUser {
     /**
      * 소셜로그인 회원가입 위한 생성자
      */
-    public JyUser(String userName, String userPw, String userEmail, String role, String provider, String providerId, LocalDateTime regDate) {
-        this.userName = userName;
-        this.userPw = userPw;
+    public JyUser(String username, String password, String userEmail, String role, String provider, String providerId, LocalDateTime regDate) {
+        this.username = username;
+        this.password = password;
         this.userEmail = userEmail;
-        this.role = role;
+        this.roles = roles;
         this.provider = provider;
         this.providerId = providerId;
         this.regDate = regDate;
+    }
+    
+    /**
+     * roles 컬럼에 ROLE_ADMIN,ROLE_USER 등 여러개가 들어있을때 콤마를 기준으로 하여 가져오는 메서드
+     * 만약 리스트가 없을경우에는 빈 ArrayList 를 리턴한다
+     */
+    public List<String> getRoleList(){
+        if(this.roles.length()>0) {
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>();
     }
 
 

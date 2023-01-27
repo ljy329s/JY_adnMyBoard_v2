@@ -4,16 +4,16 @@
 <!-- 회원가입 원본-->
     <insert id="insertNewUser" parameterType="jyUser">
         INSERT INTO jy_user
-            (user_id, user_pw, user_name, user_phone, user_email, user_birth, role, reg_date)
+            (username, password, name, user_phone, user_email, user_birth, roles, reg_date)
         VALUES
-            (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{userEmail}, #{userBirth}, #{role}, NOW())
+            (#{username}, #{password}, #{name}, #{userPhone}, #{userEmail}, #{userBirth}, #{roles}, NOW())
     </insert>
 <!--&lt;!&ndash;    회원가입 이미지 추가 &ndash;&gt;-->
 <!--    <insert id="insertNewUser" parameterType="jyUser">-->
 <!--        INSERT INTO jy_user-->
-<!--        (user_id, user_pw, user_name, user_phone, user_email, user_birth, role, reg_date, uploadPath, change_name, origin_name)-->
+<!--        (username, password, name, user_phone, user_email, user_birth, roles, reg_date, uploadPath, change_name, origin_name)-->
 <!--        VALUES-->
-<!--            (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{userEmail}, #{userBirth}, #{role}, NOW(), #{uploadPath}, #{changeName}, #{originName})-->
+<!--            (#{username}, #{password}, #{name}, #{userPhone}, #{userEmail}, #{userBirth}, #{roles}, NOW(), #{uploadPath}, #{changeName}, #{originName})-->
 <!--    </insert>-->
 
     <select id="checkId" parameterType="string" resultType="int">
@@ -30,14 +30,14 @@
 
     <select id="selectUser" parameterType="string" resultType="jyUser">
         SELECT user_no,
-               user_id,
-               user_pw,
-               user_name,
+               username,
+               password,
+               name,
                user_phone,
                user_email,
                DATE_FORMAT(user_birth, '%Y-%m-%d') AS user_birth,
                del_yn,
-               role,
+               roles,
                reg_date,
                end_date,
                provider,
@@ -46,37 +46,37 @@
                change_name,
                origin_name
         FROM   jy_user
-        WHERE  user_id = #{userId}
+        WHERE  username = #{username}
           AND  del_yn = 'N'
     </select>
 
 <!--    소셜로그인시 회원등록-->
     <insert id="insertNewScUser" parameterType="jyUser">
         INSERT INTO jy_user
-            (user_id, user_pw,user_name, user_email , role, reg_date)
+            (username, password,name, user_email , roles, reg_date)
         VALUES
-            (#{userId}, #{userPw},#{userName},#{userEmail}, #{role}, NOW())
+            (#{username}, #{password},#{name},#{userEmail}, #{roles}, NOW())
     </insert>
 
 <!--    소셜 로그인-->
     <select id="selectScUser" resultType="jyUser">
-        SELECT user_id, user_name, user_pw, user_email, role, reg_date, provider,provider_id
+        SELECT username, name, password, user_email, roles, reg_date, provider,provider_id
         FROM   jy_user
-        WHERE  user_id = #{userId}
+        WHERE  username = #{username}
     </select>
 
 <!--    아이디 찾기-->
     <select id="findId" resultType="string" parameterType="map">
         SELECT user_id
         FROM   jy_user
-        WHERE  user_name = #{userName}
+        WHERE  name = #{name}
           AND  user_email = #{userEmail}
     </select>
 
 <!--    회원정보 수정(마이페이지)-->
     <update id="updateUser" parameterType="jyUser">
         UPDATE jy_user
-        SET   user_name = #{userName},
+        SET   name = #{name},
                user_birth = #{userBirth},
                user_phone = #{userPhone},
                user_email = #{userEmail}

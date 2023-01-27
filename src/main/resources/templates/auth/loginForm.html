@@ -4,6 +4,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/js/jquery-3.6.1.min.js"></script>
     <title>로그인화면</title>
 </head>
 
@@ -45,7 +46,7 @@
                 </div>
                 <div id="loginT_box">
                 <div>
-                    <button type="submit" class="form-control btn btn-outline-info">로그인</button>
+                    <button type="button" id="loginBtn" class="form-control btn btn-outline-info">로그인</button>
                 </div>
                 <div>
                     <button type="button" class="btn-primary btn form-control"
@@ -68,4 +69,30 @@
     </div>
 </div>
 </body>
+<script>
+  
+  $("#loginBtn").click(function () {
+    let username = $("#username").val();
+    let password = $("#password").val();
+    let login = {
+      "username": username,
+      "password": password
+    }
+    
+    $.ajax({
+      url: "/login",
+      method: "POST",
+      data: JSON.stringify(login),
+      success:function (login) {
+        console.log(login);
+        
+        alert("입력받은데이터 : " + login)
+        location.href="/";
+      },error(){
+        alert("에러발생");
+      }
+      
+    });
+  });
+</script>
 </html>

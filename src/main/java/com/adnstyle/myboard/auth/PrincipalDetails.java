@@ -31,30 +31,30 @@ public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
         this.jyUser = jyUser;
         this.attributes = attributes;
     }
-
-    //해당 User의 권한을 리턴하는곳
+    /**
+     * 유저의 권한 체크
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collect = new ArrayList<>();
-        collect.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return jyUser.getRole();
-            }
+        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        jyUser.getRoleList().forEach(r ->{
+            authorities.add(() -> {
+                return  r;
+            });
         });
-        return collect;
+        return authorities;
     }
 
     //비밀번호리턴
     @Override
     public String getPassword() {
-        return jyUser.getUserPw();
+        return jyUser.getPassword();
     }
 
     //아이디리턴
     @Override
     public String getUsername() {
-        return jyUser.getUserId();
+        return jyUser.getUsername();
     }
 
     //계정이 만료되지 않았는지를 리턴한다
