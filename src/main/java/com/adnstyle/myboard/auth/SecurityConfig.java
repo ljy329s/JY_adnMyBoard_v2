@@ -50,7 +50,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean//static적으니까 순환참조에러 안남
+    @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
