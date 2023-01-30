@@ -98,6 +98,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             System.out.println(principalDetails.getUsername());
             System.out.println(principalDetails.getPassword());
             System.out.println("반환");
+          
+            
+            
 
             return authentication;//authentication을 반환하면 세션에 저장된다. 아마도 시큐리티 세션?
 
@@ -139,14 +142,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         System.out.println("token : " + "Bearer " + accToken);
 
         System.out.println("==================response.addHeader 시작==================");
-       
+        
         Cookie cookie = new Cookie("Authorization", "Bearer_" + accToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");//쿠키경로 설정 모든경로에서 "/" 사용하겠다
         cookie.setMaxAge(60 * 2);//초단위로 설정됨 yml에 설정한 엑세스토큰의 만료시간인 120000 즉 2분으로 설정
         response.addCookie(cookie);
-      
-        jyUserController.successLogin(cookie);
+    
+        
+      jyUserController.UserLogin(principal, request);
+      //  jyUserController.successLogin(cookie);
       //  loginUser(principal);
         
      

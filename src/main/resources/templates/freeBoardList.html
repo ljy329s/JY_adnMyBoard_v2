@@ -12,46 +12,46 @@
       margin: 30px;
       text-align: center;
     }
-
+    
     .searchBar {
       height: 40px;
       border-radius: 10px;
     }
-
+    
     .seachAria {
       width: 300px;
     }
-
+    
     #write_btn {
       float: right;
     }
-
+    
     th {
       text-align: center;
     }
-
+    
     .sBtn {
       background-color: white;
       border-color: black;
       width: 80px;
       color: black;
     }
-
+    
     .sBtn:hover {
       background-color: #85cdff;
       border-color: black;
       width: 80px;
       color: black;
     }
-
+    
     tbody {
       border: #cff4fc 1px;
     }
-
+    
     input[type=search]:focus {
       outline: none;
     }
-
+  
   </style>
 </head>
 <th:block layout:fragment="content">
@@ -79,7 +79,7 @@
         <table class="table table-hover" style="table-layout: fixed">
           <thead class="table-info">
           <tr>
-            <th:block th:if="${session.jyUserSession.role} =='ROLE_ADMIN'">
+            <th:block th:if="${session.jyUserSession.roles} =='ROLE_ADMIN'">
               <th style="width: 10%">번호</th>
               <th style="width: 40%">제목</th>
               <th style="width: 10%">작성자</th>
@@ -87,7 +87,7 @@
               <th style="width: 10%">조회 수</th>
               <th style="width: 10%">삭제 여부</th>
             </th:block>
-            <th:block th:unless="${session.jyUserSession.role} =='ROLE_ADMIN'">
+            <th:block th:unless="${session.jyUserSession.roles} =='ROLE_ADMIN'">
               <th style="width: 10%">번호</th>
               <th style="width: 50%">제목</th>
               <th style="width: 10%">작성자</th>
@@ -98,22 +98,22 @@
           </thead>
           <tbody>
           <tr th:each="board : ${myBoardList}">
-            <th:block th:if="${session.jyUserSession.role} =='ROLE_USER' and ${board.delYn}=='Y'">
+            <th:block th:if="${session.jyUserSession.roles} =='ROLE_USER' and ${board.delYn}=='Y'">
               <td colspan="6"><h6 class="text-center">삭제된 게시물입니다</h6></td>
             </th:block>
-
-            <th:block th:unless="${session.jyUserSession.role} =='ROLE_USER' and ${board.delYn}=='Y'">
+            
+            <th:block th:unless="${session.jyUserSession.roles} =='ROLE_USER' and ${board.delYn}=='Y'">
               <td th:text="${board.id}" class="text-center"></td>
               <th:block th:if="${board.id} == ${board.groupBno}">
                 <td class="text-truncate"><a
-                        th:href="@{/user/boardContent(id=${board.id},page=${ph.page},type=${type},search=${search},boardType=${board.boardType})}"
-                        th:text="${board.title}"/></td>
+                  th:href="@{/user/boardContent(id=${board.id},page=${ph.page},type=${type},search=${search},boardType=${board.boardType})}"
+                  th:text="${board.title}"/></td>
               </th:block>
               <td class="text-truncate t_txt" th:text="${board.modifiedBy}"></td>
               <td th:text="${#temporals.format(board.modifiedDate,'yyyy-MM-dd HH:mm')}"
                   class="text-center"></td>
               <td th:text="${board.viewCount}" class="text-center"></td>
-              <th:block th:if="${session.jyUserSession.role} =='ROLE_ADMIN'">
+              <th:block th:if="${session.jyUserSession.roles} =='ROLE_ADMIN'">
                 <td th:text="${board.delYn}" class="text-center"></td>
               </th:block>
             </th:block>
@@ -127,7 +127,7 @@
         </button>
       </div>
     </div>
-
+    
     <div>
       <nav aria-label="Page navigation example">
         <ul id="dyn_ul" class="pagination" style="justify-content: center">
@@ -137,7 +137,7 @@
                                      th:href="@{/user/boardList(page=${ph.beginPage}-1,type=${type},search=${search},boardType=Free_Board)}"><</a>
             </li>
           </th:block>
-
+          
           <!--         페이징        -->
           <th:block th:with="ph = ${ph}">
             <th:block th:each="num : ${#numbers.sequence(ph.beginPage,ph.endPage)}">
@@ -148,7 +148,7 @@
               </li>
             </th:block>
           </th:block>
-
+          
           <!--next-->
           <th:block th:if="${ph.showNext}">
             <li class="page-item"><a class="page-link"
@@ -156,12 +156,12 @@
             </li>
           </th:block>
         </ul>
-
+      
       </nav>
     </div>
   </div>
   </div>
-
+  
   <script th:inline="javascript">
     let myBoardList = [[${myBoardList}]]
     console.log(myBoardList)

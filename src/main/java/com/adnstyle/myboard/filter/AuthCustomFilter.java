@@ -4,7 +4,6 @@ package com.adnstyle.myboard.filter;
 import com.adnstyle.myboard.common.JwtYml;
 import com.adnstyle.myboard.controller.JyUserController;
 import com.adnstyle.myboard.jwt.JwtAuthenticationFilter;
-import com.adnstyle.myboard.jwt.JwtAuthorizationFilter;
 import com.adnstyle.myboard.jwt.TokenProvider;
 import com.adnstyle.myboard.model.repository.JyUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,8 @@ public class AuthCustomFilter extends AbstractHttpConfigurer<AuthCustomFilter, H
     public void configure(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);//꼭 넘겨야하는 파라미터 AuthenticationManger! 얘가 로그인을 진행하는 필터이기 때문
         http
-            .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtYml, tokenProvider, jyUserController))//인증처리
-            .addFilter(new JwtAuthorizationFilter(authenticationManager , jyUserRepository, jwtYml, tokenProvider));//인가처리
+            .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtYml, tokenProvider, jyUserController));//인증처리
+           // .addFilter(new JwtAuthorizationFilter(authenticationManager , jyUserRepository, jwtYml, tokenProvider));//인가처리
 
     }
 }

@@ -37,29 +37,24 @@ public class SecurityConfig {
         
         http
             .authorizeRequests()
-            .antMatchers("/user/**").access("hasRole('ROLE_USER')")
-            .antMatchers( "/loginForm","/","/user/jyHome").permitAll()
+            //.antMatchers("/user/**").access("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+            .antMatchers( "/loginForm","/","/user/jyHome","/user/boardList").permitAll()
             .and()
-//                .authorizeRequests()
-////              .antMatchers("/user/**").authenticated()
-//           // .antMatchers("/user/boardList").permitAll()
-//////                .antMatchers("/manager/**").access("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')")
-////                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-//                .antMatchers("/**").permitAll()
-//                    .and()
             .csrf().disable()
             .httpBasic().disable()
             .addFilter(corsConfig.corsFilter())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//세션사용안함
             .and()
             .formLogin().disable()
-            .apply(authCustomFilter)
-            .and();
+            .apply(authCustomFilter);
+        
+        //소셜로그인 관련 보류
+        // 구글로그인이 완료되면 코드를 받는게 아니라 엑세스 토큰 + 사용자프로필정보를 한번에 받는다
 //            .and()
 //                .userInfoEndpoint()
 //                .userService(principalOauth2UserService);
-        //소셜로그인 관련 보류
-        // 구글로그인이 완료되면 코드를 받는게 아니라 엑세스 토큰 + 사용자프로필정보를 한번에 받는다
+
+
         return http.build();
     }
     

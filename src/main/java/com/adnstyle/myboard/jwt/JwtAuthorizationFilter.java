@@ -26,7 +26,6 @@ import static com.auth0.jwt.JWT.require;
  * 권한이나 인증이 필요없다면 타지않게된다.
  */
 
-
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final JwtYml jwtYml;
     private final JyUserRepository jyUserRepository;

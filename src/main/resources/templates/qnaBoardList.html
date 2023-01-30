@@ -11,18 +11,19 @@
     #write_btn {
       float: right;
     }
-
+    
     th {
       text-align: center;
     }
-
+    
     tbody {
       border: #cff4fc 1px;
     }
-    table{
+    
+    table {
       margin-top: 100px;
     }
-
+  
   </style>
 </head>
 
@@ -35,31 +36,31 @@
           <thead class="table-info"/>
           <tr>
             <th style="width: 10%">번호</th>
-            <th:block th:if="${session.jyUserSession.role} =='ROLE_ADMIN'">
+            <th:block th:if="${session.jyUserSession.roles} =='ROLE_ADMIN'">
               <th style="width: 50%">제목</th>
               <th style="width: 10%">작성자</th>
             </th:block>
-            <th:block th:unless="${session.jyUserSession.role} =='ROLE_ADMIN'">
+            <th:block th:unless="${session.jyUserSession.roles} =='ROLE_ADMIN'">
               <th style="width: 50%">제목</th>
               <th style="width: 20%">작성자</th>
             </th:block>
             <th style="width: 20%">작성일</th>
-            <th:block th:if="${session.jyUserSession.role} =='ROLE_ADMIN'">
+            <th:block th:if="${session.jyUserSession.roles} =='ROLE_ADMIN'">
               <th style="width: 10%">삭제 여부</th>
             </th:block>
           </tr>
           </theadtable-info>
           <tbody>
           <tr th:each="board : ${myBoardList}">
-            <th:block th:if="${session.jyUserSession.role} =='ROLE_USER' and ${board.delYn}=='Y'">
+            <th:block th:if="${session.jyUserSession.roles} =='ROLE_USER' and ${board.delYn}=='Y'">
               <td colspan="5"><h6 class="text-center">삭제된 게시물입니다</h6></td>
             </th:block>
-            <th:block th:unless="${session.jyUserSession.role} =='ROLE_USER' and ${board.delYn}=='Y'">
+            <th:block th:unless="${session.jyUserSession.roles} =='ROLE_USER' and ${board.delYn}=='Y'">
               <td th:text="${board.id}" class="text-center"></td>
               <th:block th:if="${board.id} == ${board.groupBno}">
                 <td class="text-truncate"><a
-                        th:href="@{/user/qnaContent(id=${board.id},page=${ph.page})}"
-                        th:text="${board.title}"/></td>
+                  th:href="@{/user/qnaContent(id=${board.id},page=${ph.page})}"
+                  th:text="${board.title}"/></td>
               </th:block>
               <th:block th:unless="${board.id} == ${board.groupBno}">
                 <td><a th:href="@{/user/answerContent(id=${board.id},page=${ph.page})}"
@@ -69,14 +70,14 @@
               <td class="text-truncate text-center" th:text="${board.modifiedBy}"></td>
               <td th:text="${#temporals.format(board.modifiedDate,'yyyy-MM-dd HH:mm')}"
                   class="text-center"></td>
-              <th:block th:if="${session.jyUserSession.role} =='ROLE_ADMIN'">
+              <th:block th:if="${session.jyUserSession.roles} =='ROLE_ADMIN'">
                 <td th:text="${board.delYn}" class="text-center"></td>
               </th:block>
             </th:block>
           </tr>
           </tbody>
-
-
+        
+        
         </table>
       </div>
       <div id="btnBox">
@@ -84,9 +85,9 @@
                 onclick="location.href='/user/questionsForm'">질문글 작성
         </button>
       </div>
-
+    
     </div>
-
+    
     <div>
       <nav aria-label="Page navigation example">
         <ul id="dyn_ul" class="pagination" style="justify-content: center">
@@ -96,7 +97,7 @@
                                      th:href="@{/user/boardList(page=${ph.beginPage}-1,type=${type},search=${search},boardType=QnA_Board)}"><</a>
             </li>
           </th:block>
-
+          
           <!--         페이징        -->
           <th:block th:with="ph = ${ph}">
             <th:block th:each="num : ${#numbers.sequence(ph.beginPage,ph.endPage)}">
@@ -107,11 +108,10 @@
               </li>
             </th:block>
           </th:block>
-
+          
           <!--next-->
           <th:block th:if="${ph.showNext}">
-            <li class="page-item"><a class="page-link"
-                                     th:href="@{/user/boardList(page=${ph.endPage}+1,type=${type},search=${search}, boardType=QnA_Board)}">></a>
+            <li class="page-item"><a class="page-link" th:href="@{/user/boardList(page=${ph.endPage}+1,type=${type},search=${search}, boardType=QnA_Board)}">></a>
             </li>
           </th:block>
         </ul>
@@ -119,7 +119,7 @@
     </div>
   </div>
   </div>
-
+  
   <script th:inline="javascript">
     let myBoardList = [[${myBoardList}]]
     console.log(myBoardList)

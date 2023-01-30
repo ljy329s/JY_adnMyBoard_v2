@@ -7,13 +7,13 @@ import com.adnstyle.myboard.model.service.JyAttachService;
 import com.adnstyle.myboard.model.service.JyUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.Map;
@@ -95,11 +95,30 @@ public class JyUserController {
      */
     
     // @AuthenticationPrincipal 어노테이션을 사용하면 PrincipalDetails에서  return한 객체를 받아서 파라미터로 사용할수있다.
+//    @GetMapping("/user/userLogin")
+//    public String UserLogin(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpSession session) {
+//        JyUser jyUserSession = principalDetails.getJyUser();
+//        session.setAttribute("jyUserSession", jyUserSession);
+//
+//        return "jyHome";
+//    }
+
     @GetMapping("/user/userLogin")
-    public String UserLogin(@AuthenticationPrincipal PrincipalDetails principalDetails, HttpSession session) {
-        JyUser jyUserSession = principalDetails.getJyUser();
-        session.setAttribute("jyUserSession", jyUserSession);
+    public String UserLogin(PrincipalDetails principalDetails, HttpServletRequest request) {
+        System.out.println("로그인 성공시 세션생성하기");
+        HttpSession session = request.getSession();//세션사용하기
+        try {
+            JyUser jyUserSession = principalDetails.getJyUser();
+            System.out.println("jyUser ? :" +jyUserSession);
+            session.setAttribute("jyUserSession", jyUserSession);
+            System.out.println("session은? :" + session);
+            System.out.println("jyUserSession 은? :"+ jyUserSession);
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+            System.out.println("세션은 ? "+session);
+            
         
+        }
         return "jyHome";
     }
     
@@ -193,6 +212,5 @@ public class JyUserController {
         System.out.println("cookie :" + cookie);
         
         return "jyHome";
-        
     }
 }
