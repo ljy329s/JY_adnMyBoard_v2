@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    
     private final PrincipalOauth2UserService principalOauth2UserService;
     
     private final CorsConfig corsConfig;
@@ -30,26 +30,31 @@ public class SecurityConfig {
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("시큐리티 필터 동작");
         
         http
-                .authorizeRequests()
-//              .antMatchers("/user/**").authenticated()
-           // .antMatchers("/user/boardList").permitAll()
-////                .antMatchers("/manager/**").access("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')")
-//                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/user/**").permitAll()
-                    .and()
+            .authorizeRequests()
+            .antMatchers("/user/**").access("hasRole('ROLE_USER')")
+            .antMatchers( "/loginForm","/","/user/jyHome").permitAll()
+            .and()
+//                .authorizeRequests()
+////              .antMatchers("/user/**").authenticated()
+//           // .antMatchers("/user/boardList").permitAll()
+//////                .antMatchers("/manager/**").access("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')")
+////                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+//                .antMatchers("/**").permitAll()
+//                    .and()
             .csrf().disable()
             .httpBasic().disable()
             .addFilter(corsConfig.corsFilter())
-            .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//세션사용안함
             .and()
             .formLogin().disable()
-            .apply(authCustomFilter);
+            .apply(authCustomFilter)
+            .and();
 //            .and()
 //                .userInfoEndpoint()
 //                .userService(principalOauth2UserService);
@@ -57,5 +62,5 @@ public class SecurityConfig {
         // 구글로그인이 완료되면 코드를 받는게 아니라 엑세스 토큰 + 사용자프로필정보를 한번에 받는다
         return http.build();
     }
-
+    
 }

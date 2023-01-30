@@ -23,13 +23,6 @@ public class AuthCustomFilter extends AbstractHttpConfigurer<AuthCustomFilter, H
     private final JyUserRepository jyUserRepository;
     
     private final JyUserController jyUserController;
-//    @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);//꼭 넘겨야하는 파라미터 AuthenticationManger! 얘가 로그인을 진행하는 필터이기 때문
-//        http
-//            .addFilter(new JwtAuthenticationFilter(authenticationManager));//인증처리
-//
-//    }
     
     @Override
     public void configure(HttpSecurity http) throws Exception {
