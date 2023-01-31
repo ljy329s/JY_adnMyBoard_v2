@@ -149,6 +149,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       jyUserController.UserLogin(principal, request);
       //  jyUserController.successLogin(cookie);
       //  loginUser(principal);
+      //  chain.doFilter(request,response);
 
     }
     
