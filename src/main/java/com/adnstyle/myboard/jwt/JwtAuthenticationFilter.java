@@ -52,7 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      * //
      */
     private long refreshTokenValidTime = Duration.ofMinutes(3).toMillis();
-    
 
 
     /**
@@ -98,10 +97,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             System.out.println(principalDetails.getUsername());
             System.out.println(principalDetails.getPassword());
             System.out.println("반환");
-          
             
-            
-
             return authentication;//authentication을 반환하면 세션에 저장된다. 아마도 시큐리티 세션?
 
         } catch (IOException e) {
@@ -139,11 +135,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accToken = tokenProvider.createToken(principal);
         //리프레시 토큰 생성
         String refToken = tokenProvider.refreshToken(principal);
-        System.out.println("token : " + "Bearer " + accToken);
+        System.out.println("token : " + jwtYml.getPrefix() + accToken);
 
         System.out.println("==================response.addHeader 시작==================");
         
-        Cookie cookie = new Cookie("Authorization", "Bearer_" + accToken);
+        Cookie cookie = new Cookie(jwtYml.getHeader(), jwtYml.getPrefix() + accToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");//쿠키경로 설정 모든경로에서 "/" 사용하겠다
         cookie.setMaxAge(60 * 2);//초단위로 설정됨 yml에 설정한 엑세스토큰의 만료시간인 120000 즉 2분으로 설정
@@ -153,24 +149,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       jyUserController.UserLogin(principal, request);
       //  jyUserController.successLogin(cookie);
       //  loginUser(principal);
-        
-     
-
 
     }
-
-//    /**
-//     * 세션생성
-//     */
-//    private void loginUser(PrincipalDetails principal) {
-//        System.out.println("세션생성");
-//
-//        JyUser jyUserSession = principal.getJyUser();
-//        System.out.println("jyUserSession"+jyUserSession);
-//        session.setAttribute("jyUserSession", jyUserSession);
-//
-////
-//    }
     
     /**
      *로그인 실패시 호출되는 메서드
@@ -178,8 +158,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        System.out.println("로그인실패시 돌게 될곳");
+        System.out.println("로그인실패시 돌게 될곳 unsuccessfulAuthentication");
         super.unsuccessfulAuthentication(request, response, failed);
     }
+    
     
 }

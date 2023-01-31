@@ -62,7 +62,7 @@ spring:
 #    save-user-dir: C:\\upload_profile\
 
 server:
-  port: 8080
+  port: 9064
   error:
     whitelabel:
       enabled: false

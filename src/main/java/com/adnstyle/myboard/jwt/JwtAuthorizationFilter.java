@@ -22,9 +22,10 @@ import static com.auth0.jwt.JWT.require;
 
 /**
  * 권한이나 인증이 필요한 특정 주소를 요청했을때 BasicAuthenticationFilter 를 타게된다.
- * BasicAuthenticationFilter : formlogin을 사용하지 않을때 타는 필터 >
+ * BasicAuthenticationFilter : formlogin을 사용하지 않을때 타는 필터
  * 권한이나 인증이 필요없다면 타지않게된다.
  */
+
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final JwtYml jwtYml;
@@ -38,7 +39,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         this.jwtYml = jwtYml;
         this.tokenProvider = tokenProvider;
     }
-
+    
+    
     //인증이나 권한이 필요한 요청에는 이 필터를 거치게 된다.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -56,11 +58,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if(cookies != null){
         for (Cookie c : cookies) {
             if (c.getName().equals("Authorization") && c != null) {//쿠키중에 이름이  Authorization인것만 가져오기 + 비어있지 않을때
-    
-                System.out.println(c.getName());//쿠키 이름 가져오기
+                
                 accName = c.getName();
-                System.out.println(c.getValue());//쿠키 값 가져오기
-                accToken += c.getValue();
+                System.out.println(accName);//쿠키 이름 가져오기
+    
+                accToken = c.getValue();
+                System.out.println(accToken);//쿠키 값 가져오기
+               
             }
         }
         }else {
@@ -149,7 +153,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         //Authentication에는 현재 권한이 들어있으므로 권한이 필요한 곳에 조회할때 해당 권한을 체크해줄것
     
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("시큐리티 세션" + SecurityContextHolder.getContext());
     
+        chain.doFilter(request,response);
+
     }
     
     

@@ -120,7 +120,7 @@
 
           <div class="btn-group" role="group" aria-label="Basic example">
 
-            <th:block th:if="${session.jyUserSession.userId == myContent.modifiedBy}">
+            <th:block th:if="${session.jyUserSession.username == myContent.modifiedBy}">
               <button type="button" class="btn btn-primary" id="upd_btn" style="display: inline">수정하기
               </button>
               <button type="submit" class="btn btn-primary" id="upd_sub" style="display: none">수정완료
@@ -132,7 +132,7 @@
             </button>
 
 
-            <th:block th:if="${session.jyUserSession.userId == myContent.modifiedBy}">
+            <th:block th:if="${session.jyUserSession.username == myContent.modifiedBy}">
               <button type="button" id="del_btn" class="btn btn-primary"
                       th:onclick="|location.href='@{/user/deleteContent(id=${myContent.id},boardType=${myContent.boardType})}'|">
                 삭제
@@ -151,7 +151,7 @@
             <input type="text" name="reContent" id="reContent" class="form-control">
             <!--댓글작성자-->
             <input type="hidden" name="reCreatedBy" id="reCreatedBy"
-                   th:value="${session.jyUserSession.userId}" readonly="readonly">
+                   th:value="${session.jyUserSession.username}" readonly="readonly">
             <!--원글게시글 번호-->
             <th:block th:each="myContent : ${myContent}">
               <input type="hidden" name="boardBno" id="boardBno" th:value="${myContent.id}">
@@ -187,7 +187,7 @@
                                               rows="10"></textarea>
 
                 <input type="hidden" name="reCreatedBy" id="childReplyCreateBy"
-                       th:value="${session.jyUserSession.userId}">
+                       th:value="${session.jyUserSession.username}">
               </div>
 
               <div class="modal-footer">
@@ -398,7 +398,7 @@
                 newReplyList += "<td>" + reply.reCreatedDate + "</td>";
 
                 newReplyList += "<td><div>";
-                if (JyUserSession.userId == reply.reCreatedBy) {
+                if (JyUserSession.username == reply.reCreatedBy) {
                   newReplyList += "<input type='hidden' value=" + reply.reBno + " id='reBno' class='reBno'>";
                   newReplyList += "<button type='button'";
                   newReplyList += "class='reply_del_btn btn btn-primary' id='reply_del_btn'";

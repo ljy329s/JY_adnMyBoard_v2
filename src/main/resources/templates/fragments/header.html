@@ -65,7 +65,7 @@
         <div id="LoginProfileBox">
         </div>
         <th:block th:if="${session.jyUserSession != null}">
-          <li th:text="${session.jyUserSession.userName} + 님 +' '+안녕하세요"></li>
+          <li th:text="${session.jyUserSession.name} + 님 +' '+안녕하세요"></li>
           <li>
             <button type="button" onclick="location.href='/logout'" id="logout"
                     class="btn btn-outline-dark">로그아웃

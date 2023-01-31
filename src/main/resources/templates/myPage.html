@@ -63,7 +63,7 @@
           
           <div class="form-group">
             <label for="name">이름</label>
-            <input type="text" class="form-control myPage" id="name" th:value="${session.jyUserSession.userName}"
+            <input type="text" class="form-control myPage" id="name" th:value="${session.jyUserSession.name}"
                    readonly="readonly" name="userName" required>
           </div>
           <div class="form-group">
@@ -86,7 +86,7 @@
             <input type="text" class="form-control" id="regDate"
                    th:value="${session.jyUserSession.regDate}" readonly="readonly">
           </div>
-          <input type="hidden" th:value="${session.jyUserSession.userId}" name="userId">
+          <input type="hidden" th:value="${session.jyUserSession.username}" name="username">
           
           <div class="form-group">
             <button type="button" id="updateMP" class="btn btn-outline-info">수정</button>

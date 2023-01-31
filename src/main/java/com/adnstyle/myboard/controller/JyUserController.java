@@ -117,7 +117,6 @@ public class JyUserController {
             System.out.println(e.getMessage());
             System.out.println("세션은 ? "+session);
             
-        
         }
         return "jyHome";
     }

@@ -26,6 +26,7 @@ public class SecurityConfig {
     
     private final AuthCustomFilter authCustomFilter;
     
+   
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,11 +35,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("시큐리티 필터 동작");
-        
+    
+    
         http
             .authorizeRequests()
-            //.antMatchers("/user/**").access("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
-            .antMatchers( "/loginForm","/","/user/jyHome","/user/boardList").permitAll()
+            .antMatchers("/user/myPage").access("hasAnyRole('ROLE_ADMIN')")
+            .antMatchers( "/loginForm","/","/user/jyHome","/jyHome").permitAll()
+            .antMatchers("/user/boardList").access("hasRole('ROLE_USER')")
             .and()
             .csrf().disable()
             .httpBasic().disable()
@@ -46,12 +49,14 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//세션사용안함
             .and()
             .formLogin().disable()
+//            .addFilter(jwtAuthenticationFilter)
+//            .addFilter(jwtAuthorizationFilter);
             .apply(authCustomFilter);
         
         //소셜로그인 관련 보류
         // 구글로그인이 완료되면 코드를 받는게 아니라 엑세스 토큰 + 사용자프로필정보를 한번에 받는다
 //            .and()
-//                .userInfoEndpoint()
+//               .userInfoEndpoint()
 //                .userService(principalOauth2UserService);
 
 
