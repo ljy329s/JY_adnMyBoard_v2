@@ -85,48 +85,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
     
             System.out.println("=========================");
-    
-            //정상적인 사용자인지, 권한이 있는지 확인
-//        System.out.println("3. Jwt 토큰을 검증해서 정상적인 사용자인지, 권한이 맞는지 확인");
-//        String jwtToken;
-//        jwtToken = request.getHeader(jwtYml.getHeader()).replace(jwtYml.getPrefix(), "");
-//
-//
-            //엑세스 토큰이 만료확인
-//        if (tokenProvider.isExpiredAccToken(jwtToken)) {
-//            System.out.println("엑세스 토큰이 만료됐습니다.");
-//            System.out.println("엑세스 토큰 재발급 전 리프레시 토큰 확인");
-//
-//
-//            //엑세스 토큰이 만료됐으면 리프레시 토큰의 만료여부를 확인해야하고,
-//            //7일이내 남은건지 확인해야함
-//            try {
-//
-//                String username = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
-//                        .build()
-//                        .verify(jwtToken)
-//                        .getClaim("username")
-//                        .asString();
-//
-//                System.out.println("username? : "+ username);
-//
-//                System.out.println("리프레시토큰 만료 확인");
-//                if (tokenProvider.isExpiredRefToken(username)) {
-//                    System.out.println("리프레시 토큰 만료 + 로그아웃처리");
-//                    //만료라면 로그아웃 처리를 엑세스 + 리프레시 둘다 만료니까
-//                } else {
-//                    System.out.println("리프레시 토큰 유효 + 엑세스 토큰 재발급");
-//                    //유효할때 엑세스 토큰 재발급
-//                    jwtToken = tokenProvider.reCreateAccToken(jwtToken);
-//
-//                }
-//            }catch (TokenExpiredException e){
-//                System.out.println("만료된 엑세스토큰에서 값 꺼내기");
-//            }
-//
-//
-//
-//        }else //엑세스토큰이 만료 되지 않았을때
+            
             System.out.println("엑세스토큰 유효");
     
             String token = accToken.replace(jwtYml.getPrefix(), "");//헤더부분 없애기

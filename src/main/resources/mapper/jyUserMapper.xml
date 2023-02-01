@@ -67,7 +67,7 @@
 
 <!--    아이디 찾기-->
     <select id="findId" resultType="string" parameterType="map">
-        SELECT user_id
+        SELECT usernmae
         FROM   jy_user
         WHERE  name = #{name}
           AND  user_email = #{userEmail}
@@ -80,6 +80,6 @@
                user_birth = #{userBirth},
                user_phone = #{userPhone},
                user_email = #{userEmail}
-        WHERE  user_id = #{userId}
+        WHERE  username = #{username}
     </update>
 </mapper>
