@@ -109,10 +109,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             System.out.println("5. jwt 토큰서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.");
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
     
-            System.out.println("6. 강제로 시큐리티 세션에 접근하여 Authentication 객체를 저장한다.");
-            //sequrityContextHolder에 전달받은 jwt로 만든 authentication 을 저장해준다.
-            //Authentication에는 현재 권한이 들어있으므로 권한이 필요한 곳에 조회할때 해당 권한을 체크해줄것
     
+        /**
+         * securityContextHolder 에 전달받은 jwt로 만든 authentication 을 저장해준다.
+         * Authentication 에는 현재 권한이 들어있으므로 권한이 필요한 곳에 조회할때 해당 권한을 체크해줄것
+         */
+        System.out.println("6. 강제로 시큐리티 세션에 접근하여 Authentication 객체를 저장한다.");
+        
             SecurityContextHolder.getContext().setAuthentication(authentication);
             System.out.println("시큐리티 세션" + SecurityContextHolder.getContext());
         

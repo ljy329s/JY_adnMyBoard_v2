@@ -98,7 +98,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             System.out.println(principalDetails.getPassword());
             System.out.println("반환");
             
-            return authentication;//authentication을 반환하면 세션에 저장된다. 아마도 시큐리티 세션?
+            return authentication;//authentication을 반환하면 시큐리티 세션에 저장된다
 
         } catch (IOException e) {
             e.printStackTrace();
