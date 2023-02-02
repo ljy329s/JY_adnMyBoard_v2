@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://thymeleaf.org">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<script src="/static/js/jquery-3.6.1.min.js"></script>
 <th:block th:fragment="headerFragment">
   <style>
     #user {
@@ -84,16 +85,17 @@
     <ul class="nav nav-pills nav-fill">
       
       <li class="nav-item" id="nav01">
-        <a class="nav-link nav1" aria-current="page" href="/" value="main">메인화면</a>
+        <a class="nav-link nav1" aria-current="page" value="main" id="menu1">메인화면</a>
+        <!--        href="/"-->
       </li>
       <li class="nav-item">
-        <a class="nav-link nav2" th:href="@{/user/boardList(boardType='QnA_Board')}">문의하기</a>
+        <a class="nav-link nav2" th:href="@{/user/boardList(boardType='QnA_Board')}" id="menu2">문의하기</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link nav3" th:href="@{/user/boardList(boardType='Free_Board')}">자유게시판</a>
+        <a class="nav-link nav3" th:href="@{/user/boardList(boardType='Free_Board')}" id="menu3">자유게시판</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link nav4" href="/user/myPage">마이페이지</a>
+        <a class="nav-link nav4" href="/user/myPage" id="menu4">마이페이지</a>
       </li>
     </ul>
   </header>
@@ -101,15 +103,46 @@
     let JyUserSession = [[${session.jyUserSession}]]
     console.log("JyUserSession" + JyUserSession);
     
-  </script>
-  
-  <script>
     $("#logout").click(function () {
       alert("로그아웃 했습니다");
     })
-    
   </script>
-
+  
+  <!--  jwt 로그인이후 모든 요청시 엑세스토큰의 만료여부를 확인하고 만료시간이 얼마 남지않았으면 재발급 받는 과정을 확인해보자 임시적으로 만드는 함수-->
+  <script>
+    let menu1 = document.getElementById("menu1");
+    
+    let menu2 = document.getElementById("menu2");
+    
+    let menu3 = document.getElementById("menu3");
+    
+    let menu4 = document.getElementById("menu4");
+    
+    
+    menu1.onclick = function () {
+      alert("menu1클릭");
+      reissue();
+    };
+    
+    function reissue(){
+      alert("reissue 메서드 호출")
+      $.ajax({
+        url: "/reissue",
+        type: "post",
+        success: function (data) {
+          alert("성공")
+          if (data) {
+            console.log(data);
+            alert(data);
+            return;
+          }
+        }
+        ,error(){
+          alert("에러발생")
+        }
+      })
+    };
+  </script>
 
 </th:block>
 </html>

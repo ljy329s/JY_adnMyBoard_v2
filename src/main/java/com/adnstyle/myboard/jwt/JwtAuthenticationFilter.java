@@ -133,7 +133,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //엑세스토큰 생성
         String accToken = tokenProvider.createToken(principal);
         //리프레시 토큰 생성
-        String refToken = tokenProvider.refreshToken(principal);
+        tokenProvider.refreshToken(principal);
         System.out.println("token : " + jwtYml.getPrefix() + accToken);
 
         System.out.println("==================response.addHeader 시작==================");

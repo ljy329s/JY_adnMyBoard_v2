@@ -2,6 +2,7 @@ package com.adnstyle.myboard.jwt;
 
 import com.adnstyle.myboard.auth.PrincipalDetails;
 import com.adnstyle.myboard.common.JwtYml;
+import com.adnstyle.myboard.controller.JyHomeController;
 import com.adnstyle.myboard.model.domain.JyUser;
 import com.adnstyle.myboard.model.repository.JyUserRepository;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -31,8 +32,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final JwtYml jwtYml;
     private final JyUserRepository jyUserRepository;
     private final TokenProvider tokenProvider;
-
-
+    
+    
+    
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, JyUserRepository jyUserRepository, JwtYml jwtYml, TokenProvider tokenProvider) {
         super(authenticationManager);
         this.jyUserRepository = jyUserRepository;
@@ -71,7 +73,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 }
             } else {
                 System.out.println("쿠키가 없습니다");
-                return;
+                JyHomeController jyHomeController = new JyHomeController();
+                jyHomeController.jyHome();
+               
             }
     
             System.out.println("accToken: " + accToken);
@@ -122,6 +126,5 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request,response);
 
     }
-    
     
 }
