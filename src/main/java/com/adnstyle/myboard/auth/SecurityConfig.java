@@ -2,6 +2,7 @@ package com.adnstyle.myboard.auth;
 
 
 import com.adnstyle.myboard.filter.AuthCustomFilter;
+import com.adnstyle.myboard.jwt.JwtAuthenticationEntryPoint;
 import com.adnstyle.myboard.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,8 @@ public class SecurityConfig {
     
     private final AuthCustomFilter authCustomFilter;
     
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    
    
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -51,7 +54,9 @@ public class SecurityConfig {
             .and()
             .formLogin().disable()
            // .addFilterBefore(, UsernamePasswordAuthenticationFilter.class)
-            .apply(authCustomFilter);
+            .apply(authCustomFilter)
+            .and()
+            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
 //            .addFilterBefore(new JwtAuthorizationFilter(AuthenticationManager), UsernamePasswordAuthenticationFilter.class)
 //            .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 //

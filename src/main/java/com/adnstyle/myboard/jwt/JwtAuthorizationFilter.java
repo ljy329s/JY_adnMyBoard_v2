@@ -56,7 +56,29 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     accToken = c.getValue();
                     System.out.println(accToken);//쿠키 값 가져오기
                     String token = accToken.replace(jwtYml.getPrefix(), "");//헤더 없애기
+                    
+                    
     
+                    if (tokenProvider.isExpiredAccToken(token)) {//액세스 토큰의 만료여부 확인
+                        //만료되면 동작
+                        String username = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
+                            .build()
+                            .verify(token)//헤더없는 엑세스토큰 디코딩
+                            .getClaim("username")
+                            .asString();
+                        if (tokenProvider.isExpiredRefToken(username)) {//리프레시토큰 만료확인
+                            System.out.println("리프레시토큰 만료확인");
+                            tokenProvider.refreshUpdateToken(username);//만료가 true라면 리프레시토큰 재생성
+    
+                        }
+                        String reAcctoken = tokenProvider.reCreateAccToken(username);
+                        System.out.println("엑세스 토큰 재발행 : " + reAcctoken);
+                        Cookie cookie = new Cookie(jwtYml.getHeader(), jwtYml.getPrefix() + accToken);
+                        cookie.setHttpOnly(true);//스크립트 상에서 접근이 불가능하도로고 한다.
+                        cookie.setSecure(true);//패킷감청을 막기 위해서 https 통신시에만 해당 쿠키를 사용하도록 한다.
+                        cookie.setPath("/");//쿠키경로 설정 모든경로에서 "/" 사용하겠다
+                        response.addCookie(cookie);
+                    }
                 }
             }
         }
