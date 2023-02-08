@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +42,7 @@ public class SecurityConfig {
             .authorizeRequests()
             .antMatchers("/user/myPage").access("hasAnyRole('ROLE_ADMIN')")
             .antMatchers( "/loginForm","/","/user/jyHome","/jyHome").permitAll()
-            .antMatchers("/user/boardList").access("hasRole('ROLE_USER')")
+            .antMatchers("/user/boardList").access("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
             .and()
             .csrf().disable()
             .httpBasic().disable()
@@ -49,10 +50,11 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//세션사용안함
             .and()
             .formLogin().disable()
-//            .addFilter(jwtAuthenticationFilter)
-//            .addFilter(jwtAuthorizationFilter);
+           // .addFilterBefore(, UsernamePasswordAuthenticationFilter.class)
             .apply(authCustomFilter);
-        
+//            .addFilterBefore(new JwtAuthorizationFilter(AuthenticationManager), UsernamePasswordAuthenticationFilter.class)
+//            .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//
         //소셜로그인 관련 보류
         // 구글로그인이 완료되면 코드를 받는게 아니라 엑세스 토큰 + 사용자프로필정보를 한번에 받는다
 //            .and()
@@ -62,5 +64,11 @@ public class SecurityConfig {
 
         return http.build();
     }
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return (web) -> web.ignoring().antMatchers("/static/**", "/","/loginForm","/user/jyHome");// "/static/**" 응로 오는 요청 무시
+    }
+    
     
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,16 +24,7 @@ public class TokenProvider {
     private final JwtYml jwtYml;
     
     private final RedisService redisService;
-    /**
-     * 엑세스토큰 만료시간 : 1분
-     */
-    private long accessTokenValidTime = Duration.ofMinutes(1).toMillis();//만료시간 30분
-    
-    /**
-     * //     * 리프레시토큰 만료시간 : 3분
-     * //
-     */
-    private long refreshTokenValidTime = Duration.ofMinutes(3).toMillis();
+  
     
     
     /**
@@ -58,26 +48,16 @@ public class TokenProvider {
      */
     
     @Transactional
-    public String reCreateAccToken(String jwtToken) {
+    public String reCreateAccToken(String username) {
         System.out.println("엑세스토큰 재발급 메서드");
-        
-        String username = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
-            .build()
-            .verify(jwtToken)
-            .getClaim("username")
-            .asString();
-        String roles = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
-            .build()
-            .verify(jwtToken)
-            .getClaim("roles")
-            .asString();
         
         String reAcctoken = JWT.create()
             .withSubject("Jwt_accessToken")
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtYml.getAccessTime()))//만료시간 2분
             .withClaim("username", username)
-            .withClaim("roles", roles)
             .sign(Algorithm.HMAC256(jwtYml.getSecretKey()));
+    
+        
         return reAcctoken;
         
     }
@@ -99,7 +79,7 @@ public class TokenProvider {
     }
     
     /**
-     * 리프레시 토큰을 재발행는 메서드
+     * 리프레시 토큰을 재발행 하는 메서드
      */
     @Transactional
     public String refreshUpdateToken(String username) {
@@ -110,22 +90,22 @@ public class TokenProvider {
         redisService.setRefreshToken(username, refToken);
         System.out.println("리프레시 토큰 재발행 : " + refToken);
         return null;
-        
     }
     
     /**
-     * 엑세스토큰 만료여부를 확인하는 메서드 이건 프론트에서 직접해결.. 아니라면 이걸 호출해서 값 전달..?
+     * 엑세스토큰 만료여부를 확인하는
      */
-    public boolean isExpiredAccToken(String username) {
-        
+    public boolean isExpiredAccToken(String token) {
+
         try {
-            require(Algorithm.HMAC256(jwtYml.getSecretKey())).build().verify(username);
+            require(Algorithm.HMAC256(jwtYml.getSecretKey())).build().verify(token);
         } catch (TokenExpiredException e) {
             System.out.println("엑세스 토큰만료");
             return true;
         }
         return false;
     }
+    
     
     /**
      * 리프레시 토큰의 만료여부를 확인하는 토큰
