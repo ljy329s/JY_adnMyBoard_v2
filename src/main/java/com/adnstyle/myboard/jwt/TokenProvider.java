@@ -11,7 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,7 +28,6 @@ public class TokenProvider {
     private final JwtYml jwtYml;
     
     private final RedisService redisService;
-  
     
     
     /**
@@ -37,7 +40,6 @@ public class TokenProvider {
             .withSubject("Jwt_accessToken")
             .withExpiresAt(new Date(System.currentTimeMillis() + jwtYml.getAccessTime()))//만료시간 2분
             .withClaim("username", principal.getJyUser().getUsername())
-            .withClaim("roles", principal.getJyUser().getRoles())
             .sign(Algorithm.HMAC256(jwtYml.getSecretKey()));
         return token;
         
@@ -57,7 +59,7 @@ public class TokenProvider {
             .withClaim("username", username)
             .sign(Algorithm.HMAC256(jwtYml.getSecretKey()));
     
-        
+    
         return reAcctoken;
         
     }
@@ -96,10 +98,11 @@ public class TokenProvider {
      * 엑세스토큰 만료여부를 확인하는
      */
     public boolean isExpiredAccToken(String token) {
-
+        
         try {
             require(Algorithm.HMAC256(jwtYml.getSecretKey())).build().verify(token);
         } catch (TokenExpiredException e) {
+            e.printStackTrace();
             System.out.println("엑세스 토큰만료");
             return true;
         }
@@ -112,6 +115,8 @@ public class TokenProvider {
      */
     
     public boolean isExpiredRefToken(String username) {
+        
+        
         try {
             
             if (redisService.getRefreshToken(username) != null) {//리프레시 토큰이 존재한다면
@@ -125,7 +130,8 @@ public class TokenProvider {
             System.out.println(e.getMessage());
             System.out.println("리프레시토큰이 없습니다 로그아웃처리");
             
-        }return false;
+        }
+        return false;
     }
     
     /**
@@ -160,5 +166,39 @@ public class TokenProvider {
         }
         return false;
         
+    }
+    
+    /**
+     * 쿠키에서 토큰을 꺼내주는 메서드
+     */
+    
+    public String getToken() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    
+        System.out.println("엑세스토큰의 만료여부 확인");
+        Cookie[] cookies = request.getCookies();
+    
+        String accToken = "";
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals("Authorization") && c != null) { //이름확인
+                
+                    accToken = c.getValue();
+                    System.out.println(accToken);//쿠키 값 가져오기
+                    String token = accToken.replace(jwtYml.getPrefix(), "");//헤더 없애기
+                    
+                    //쿠키의 토큰에서 사용자 아이디 추출
+                      String username = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
+                            .build()
+                            .verify(token)//헤더없는 엑세스토큰 디코딩
+                            .getClaim("username")
+                            .asString();
+                      
+                      return username;
+                       
+                    }
+                }
+            }
+        return null;
     }
 }
