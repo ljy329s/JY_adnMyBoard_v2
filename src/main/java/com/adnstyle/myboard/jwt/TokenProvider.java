@@ -93,22 +93,48 @@ public class TokenProvider {
         System.out.println("리프레시 토큰 재발행 : " + refToken);
         return null;
     }
+
+//    /**
+//     * 엑세스토큰 만료여부를 확인하는 원본
+//     */
+//    public boolean isExpiredAccToken(String token) {
+//
+//        try {
+//            DecodedJWT checkToken =require(Algorithm.HMAC256(jwtYml.getSecretKey())).build().verify(token);
+//            System.out.println("checkToken"+checkToken);
+//        } catch (TokenExpiredException e) {
+//            e.printStackTrace();
+//            System.out.println("엑세스 토큰만료");
+//            return true;
+//        }
+//        return false;
+//    }
     
     /**
      * 엑세스토큰 만료여부를 확인하는
      */
     public boolean isExpiredAccToken(String token) {
-        
-        try {
-            require(Algorithm.HMAC256(jwtYml.getSecretKey())).build().verify(token);
-        } catch (TokenExpiredException e) {
-            e.printStackTrace();
-            System.out.println("엑세스 토큰만료");
-            return true;
-        }
-        return false;
-    }
     
+        Date now = new Date();
+        try {
+            Date expiresAt = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
+                .build()
+                .verify(token)
+                .getExpiresAt();
+            System.out.println("지금시간" + now);
+            System.out.println("엑세스토큰의 만료여부 확인" + expiresAt);
+            if (now.before(expiresAt)) {//현재시간이 만료시간보다 이전이라면
+                System.out.println("만료전");
+                return false;
+            }
+        } catch (TokenExpiredException e) {
+            System.out.println("만료된 토큰입니다.");
+        }finally {
+        return true;
+        }
+    
+}
+
     
     /**
      * 리프레시 토큰의 만료여부를 확인하는 토큰

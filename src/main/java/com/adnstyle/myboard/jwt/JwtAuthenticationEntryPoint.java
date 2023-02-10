@@ -27,12 +27,20 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                                             throws IOException, ServletException {
-        //토큰 만료시
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Unauthorized");//401
-   String username = tokenProvider.getToken();//쿠키에서 유저아이디 추출하기
-        System.out.println("토큰에서 추출한 유저아이디"+username);
+    
+        String exception = (String)request.getAttribute("exception");
+        ErrorCode errorCode;
         
-        tokenProvider.checkRefreshToken(username);
+        //토큰 만료시
+     
+        
+        
+        
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Unauthorized");//401
+  // String username = tokenProvider.getToken();//쿠키에서 유저아이디 추출하기
+//        System.out.println("토큰에서 추출한 유저아이디"+username);
+//
+//        tokenProvider.checkRefreshToken(username);
     
     }
 }

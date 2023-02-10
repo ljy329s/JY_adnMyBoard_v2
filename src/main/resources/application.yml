@@ -34,7 +34,8 @@ jwt:
   secret-key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
   prefix: Bearer_
   access-time: 120000
-  refresh-time: 1814400000
+  refresh-time: 360000
+#  refresh-time: 1814400000
 
 redis:
   host: localhost

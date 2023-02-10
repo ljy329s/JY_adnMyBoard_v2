@@ -17,10 +17,13 @@ public class RedisService {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    //key value 저장(refreshToken 저장)
+    //key value 저장(refreshToken 저장) 만료시간 임의 설정 yml이랑 맞춰주기
     public void setRefreshToken(String key, String token){
         ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
-        valueOperations.set(key,token);
+       // valueOperations.set(key,token);
+        //Duration expireDuration = Duration.ofSeconds(60);
+        Duration expireDuration = Duration.ofSeconds(360);//6분 리프레시토큰의 임시 유효시간인 6분으로 동일 설정
+        valueOperations.set(key,token,expireDuration);
     }
 
     //key 로 value 가져오기
