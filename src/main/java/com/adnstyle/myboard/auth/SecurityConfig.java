@@ -43,9 +43,10 @@ public class SecurityConfig {
     
         http
             .authorizeRequests()
-            .antMatchers("/user/myPage").access("hasAnyRole('ROLE_ADMIN')")
+            .antMatchers("/user/myPage").access("hasRole('ROLE_ADMIN')")
             .antMatchers( "/loginForm","/","/user/jyHome","/jyHome").permitAll()
-            .antMatchers("/user/boardList").access("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+            //  .antMatchers("/user/boardList","/user/**").access("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+            .anyRequest().authenticated()//그외의 모든 요청은 인증된 사람들만 가능
             .and()
             .csrf().disable()
             .httpBasic().disable()
@@ -72,7 +73,7 @@ public class SecurityConfig {
     
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
-        return (web) -> web.ignoring().antMatchers("/static/**", "/","/loginForm","/user/jyHome");// "/static/**" 응로 오는 요청 무시
+        return (web) -> web.ignoring().antMatchers("/static/**", "/","/loginForm","/user/jyHome","/templates/**","/static/**");//  응로 오는 요청 무시
     }
     
     

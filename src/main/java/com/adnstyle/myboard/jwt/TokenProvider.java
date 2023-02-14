@@ -137,7 +137,7 @@ public class TokenProvider {
 
     
     /**
-     * 리프레시 토큰의 만료여부를 확인하는 토큰
+     * 리프레시 토큰의 만료여부를 확인하는 메서드
      */
     
     public boolean isExpiredRefToken(String username) {
@@ -155,9 +155,10 @@ public class TokenProvider {
         } catch (TokenExpiredException e) {
             System.out.println(e.getMessage());
             System.out.println("리프레시토큰이 없습니다 로그아웃처리");
-            
+            return false;
         }
-        return false;
+        return true;
+        
     }
     
     /**
@@ -188,9 +189,9 @@ public class TokenProvider {
                 return true;
             }
         } catch (TokenExpiredException e) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
         
     }
     

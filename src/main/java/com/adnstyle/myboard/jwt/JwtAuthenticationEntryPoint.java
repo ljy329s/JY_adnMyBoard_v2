@@ -7,6 +7,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,19 +29,42 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                                             throws IOException, ServletException {
     
-        String exception = (String)request.getAttribute("exception");
-        ErrorCode errorCode;
+        System.out.println("jwtAuthenticationEntryPoint 접근");
+        String referer = request.getHeader("Referer");
+        System.out.println("referer" + referer);
+        System.out.println("=========");
+//        response.sendRedirect("/reissue");
+    
+    
+        Cookie[] cookies = request.getCookies();
+        String accToken = "";
+        String accName = "";
+        if (cookies != null) {//쿠키가 존재한다면
+            for (Cookie c : cookies) {//쿠키를 꺼내는데
+                if (c.getName().equals("Authorization") && c != null) {//쿠키중에 이름이  Authorization인것만 가져오기 + 비어있지 않을때
+                
+                    accName = c.getName();//쿠키이름
+                    System.out.println(accName);//쿠키 이름 가져오기
+                
+                    accToken = c.getValue();//쿠키에 저장된 엑세스토큰
+                    System.out.println(accToken);//쿠키 값 가져오기
+                }
+            }
+        }
+        String key = accName;
+        System.out.println("key: " + key);
+        if (tokenProvider.isExpiredRefToken(key)) {
+            System.out.println("리프레시 토큰 존재 엑세스토큰 재발급 하기");
+            //String jwtToken = request.getHeader(jwtYml.getHeader()).replace(jwtYml.getPrefix() + " ", "");
+            String newAccToken = tokenProvider.reCreateAccToken(accToken);
         
-        //토큰 만료시
-     
-        
-        
-        
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Unauthorized");//401
-  // String username = tokenProvider.getToken();//쿠키에서 유저아이디 추출하기
-//        System.out.println("토큰에서 추출한 유저아이디"+username);
-//
-//        tokenProvider.checkRefreshToken(username);
+            System.out.println("엑세스토큰 재발급: " + "Bearer " + newAccToken);
+            
+            
+            response.setHeader("Authorization", "Bearer" + newAccToken);
+            
+        }
+        //response.sendRedirect(referer);
     
     }
 }

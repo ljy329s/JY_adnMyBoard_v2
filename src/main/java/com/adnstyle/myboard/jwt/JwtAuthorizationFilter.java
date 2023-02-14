@@ -177,11 +177,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         this.jwtYml = jwtYml;
         this.tokenProvider = tokenProvider;
     }
+    
     //인증이나 권한이 필요한 요청에는 이 필터를 거치게 된다.
     @Transactional
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("엑세스토큰의 만료여부 확인");
         Cookie[] cookies = request.getCookies();
         
         String accToken = "";
@@ -189,11 +189,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (cookies != null) {
             for (Cookie c : cookies) {
                 if (c.getName().equals("Authorization") && c != null) { //이름확인
-    
+                    
                     accToken = c.getValue();
                     System.out.println(accToken);//쿠키 값 가져오기
                     String token = accToken.replace(jwtYml.getPrefix(), "");//헤더 없애기
-    
+                    
                     Date now = new Date();
                     try {
                         Date expiresAt = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
@@ -206,26 +206,26 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         System.out.println("만료된 토큰입니다.");
                         //   request.setAttribute("exception", ErrorCode.EXPIRED_ACCESS_TOKEN.getCode());
                         //만료되면 동작
-                       
+                        
                         try {
-                           userid = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
+                            userid = require(Algorithm.HMAC256(jwtYml.getSecretKey()))
                                 .build()
                                 .verify(token)//헤더없는 엑세스토큰 디코딩
                                 .getClaim("username")
                                 .asString();
-                            System.out.println("username은? 1"+ userid);
-                        }catch (TokenExpiredException ex){
+                            System.out.println("username은? 1 " + userid);
+                        } catch (TokenExpiredException ex) {
                             
                             System.out.println("만료된토큰에서 아이디 꺼내기");
-                            System.out.println("username은? 2" + userid);
+                            System.out.println("username은?2 " + userid);
                             if (tokenProvider.isExpiredRefToken(userid)) {//리프레시토큰 만료확인
                                 System.out.println("리프레시토큰 만료확인");
                                 tokenProvider.refreshUpdateToken(userid);//만료가 true라면 리프레시토큰 재생성
-        
+                                
                             }
                             String reAcctoken = tokenProvider.reCreateAccToken(userid);
                             accToken = reAcctoken;// 재발급한 엑세스토큰을 기존 변수명에 다시 넣어줌
-                            System.out.println("username은?"+userid);
+                            System.out.println("username은? " + userid);
                             System.out.println("엑세스 토큰 재발행 : " + reAcctoken);
                             System.out.println("기존엑세스토큰명에 재발행 토큰 넣어준값 : " + accToken);
                             Cookie cookie = new Cookie(jwtYml.getHeader(), jwtYml.getPrefix() + accToken);
@@ -234,12 +234,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                             cookie.setPath("/");//쿠키경로 설정 모든경로에서 "/" 사용하겠다
                             response.addCookie(cookie);
                         }
-                        }
-                       
+                    }
+                    
                     
                 }
-                }
-            }//end if
+            }
+        }//end if
         
         System.out.println("===============인증 및 권한 확인하는 필터 접속===============");
         System.out.println("1.권한이나 인증이 필요한 요청이 전달됨!");

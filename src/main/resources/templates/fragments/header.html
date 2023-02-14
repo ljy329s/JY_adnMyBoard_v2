@@ -105,44 +105,8 @@
     
     $("#logout").click(function () {
       alert("로그아웃 했습니다");
+      location.href="/";
     })
   </script>
-  
-  <!--  jwt 로그인이후 모든 요청시 엑세스토큰의 만료여부를 확인하고 만료시간이 얼마 남지않았으면 재발급 받는 과정을 확인해보자 임시적으로 만드는 함수-->
-<!--  <script>-->
-    // let menu1 = document.getElementById("menu1");
-    //
-    // let menu2 = document.getElementById("menu2");
-    //
-    // let menu3 = document.getElementById("menu3");
-    //
-    // let menu4 = document.getElementById("menu4");
-    
-    
-  <!--  menu1.onclick = function () {-->
-  <!--    alert("menu1클릭");-->
-  <!--    reissue();-->
-  <!--  };-->
-  <!--  -->
-  <!--  function reissue(){-->
-  <!--    alert("reissue 메서드 호출")-->
-  <!--    $.ajax({-->
-  <!--      url: "/reissue",-->
-  <!--      type: "post",-->
-  <!--      success: function (data) {-->
-  <!--        alert("성공")-->
-  <!--        if (data) {-->
-  <!--          console.log(data);-->
-  <!--          alert(data);-->
-  <!--          return;-->
-  <!--        }-->
-  <!--      }-->
-  <!--      ,error(){-->
-  <!--        alert("에러발생")-->
-  <!--      }-->
-  <!--    })-->
-  <!--  };-->
-  <!--</script>-->
-
 </th:block>
 </html>
